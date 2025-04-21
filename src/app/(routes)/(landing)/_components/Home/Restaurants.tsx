@@ -62,7 +62,7 @@ const restaurants = [
 
 export default function RestaurantDeals() {
   return (
-    <section className="w-full sm:px-10 md:px-20 xl:px-40 py-6">
+    <section className="w-full px-4 sm:px-10 md:px-20 xl:px-40 py-6">
       <h2 className="text-2xl md:text-3xl font-semibold mb-6">
         Daily deals on Food IT
       </h2>
