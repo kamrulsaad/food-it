@@ -53,7 +53,7 @@ export default function Footer() {
       </div>
 
       <div className="mt-10 border-t sm:px-10 md:px-20 xl:px-40 py-3 flex flex-col md:flex-row items-center justify-between gap-4">
-        <Image src="/assets/logo.png" alt="Food IT" width={30} height={30} />
+        <Image src="/logo.png" alt="Food IT" width={30} height={30} />
         <p>© Food IT</p>
 
         <div className="flex gap-4">

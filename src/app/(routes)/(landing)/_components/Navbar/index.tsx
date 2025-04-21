@@ -16,7 +16,7 @@ export default function MobileNavbar() {
         {/* Logo */}
         <Link className="flex items-center" href="/">
           <Image
-            src="/assets/logo.png"
+            src="/logo.png"
             alt="Food IT Logo"
             width={40}
             height={40}
