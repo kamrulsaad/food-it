@@ -1,6 +1,6 @@
 export default function PlatformSummary() {
   return (
-    <section className="sm:px-10 md:px-20 xl:px-40 py-12 bg-white">
+    <section className="px-4 sm:px-10 md:px-20 xl:px-40 py-12 bg-white">
       <div className=" mx-auto">
         <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">
           Order food from the best restaurants and shops with Food IT Bangladesh
