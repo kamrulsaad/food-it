@@ -1,7 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
-import { SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignInButton,
+  SignOutButton,
+  SignUpButton,
+  UserButton,
+} from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 
 const navItems = [
@@ -30,24 +35,38 @@ export default async function MobileNavbar() {
         <MobileMenu navItems={navItems} />
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex items-center gap-4 text-xl font-semibold">
           {navItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="text-xl font-semibold hover:text-orange-600"
+              className=" hover:text-orange-600 hover:cursor-pointer"
             >
               {item.label}
             </Link>
           ))}
           {!userId ? (
-            <SignInButton mode="modal">
-              <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">
-                Sign In
-              </button>
-            </SignInButton>
+            <>
+              <SignInButton mode="modal">
+                <button className="text-primary py-2 rounded-md hover:text-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
+                  Sign Up
+                </button>
+              </SignUpButton>
+            </>
           ) : (
-            <UserButton />
+            <>
+              <SignOutButton>
+                <button className="py-2 rounded-md hover:text-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
+                  Sign Out
+                </button>
+              </SignOutButton>
+              <UserButton />
+            </>
           )}
         </div>
       </div>
