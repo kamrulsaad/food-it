@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "./generated/prisma"
 }
 
 datasource db {
@@ -15,15 +15,34 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String?  @unique
-  role      Role     @default(CUSTOMER)
-  address   String?
+  id      String  @id @default(uuid())
+  email   String? @unique
+  role    Role    @default(CUSTOMER)
+  address String?
+  clerkId String  @unique
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  clerkId   String   @unique
+
+  Restaurant Restaurant[]
 
   @@map("users")
+}
+
+model Restaurant {
+  id       String  @id @default(uuid())
+  name     String
+  slug     String  @unique
+  password String
+  address  String
+  approved Boolean @default(false)
+  ownerId  String  @unique
+  owner    User    @relation(fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("restaurants")
 }
 
 enum Role {
