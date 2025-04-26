@@ -30,14 +30,21 @@ model User {
 }
 
 model Restaurant {
-  id       String  @id @default(uuid())
-  name     String
-  slug     String  @unique
-  password String
-  address  String
-  approved Boolean @default(false)
-  ownerId  String  @unique
-  owner    User    @relation(fields: [ownerId], references: [id])
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  slug        String  @unique
+  email       String
+  phone       String
+  password    String
+  address     String
+  city        String
+  zipCode     String
+  state       String
+  logo        String?
+  approved    Boolean @default(false)
+  ownerId     String  @unique
+  owner       User    @relation(fields: [ownerId], references: [clerkId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
