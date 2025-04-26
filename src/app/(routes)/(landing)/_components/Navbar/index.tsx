@@ -1,15 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
+import { SignInButton, UserButton } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
 
 const navItems = [
   { href: "/", label: "Home" },
   { href: "/deals", label: "Deals" },
-  { href: "/login", label: "Login" },
-  { href: "/signup", label: "Sign Up" },
 ];
 
-export default function MobileNavbar() {
+export default async function MobileNavbar() {
+  const { userId } = await auth();
   return (
     <nav className="w-full px-4 sm:px-10 md:px-20 xl:px-40 py-3 border-b shadow-sm sticky top-0 z-50 bg-white">
       <div className="flex items-center justify-between">
@@ -29,7 +30,7 @@ export default function MobileNavbar() {
         <MobileMenu navItems={navItems} />
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex gap-6">
+        <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -39,6 +40,15 @@ export default function MobileNavbar() {
               {item.label}
             </Link>
           ))}
+          {!userId ? (
+            <SignInButton mode="modal">
+              <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out">
+                Sign In
+              </button>
+            </SignInButton>
+          ) : (
+            <UserButton />
+          )}
         </div>
       </div>
     </nav>
