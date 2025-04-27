@@ -4,8 +4,8 @@ import { notFound, redirect } from "next/navigation";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
 import { SiteHeader } from "@/components/dashboard/site-header";
-import { Button } from "@/components/ui/button";
 import { revalidatePath } from "next/cache";
+import { ApproveRestaurantButton } from "@/components/dashboard/approve-restaurant-button";
 
 interface RestaurantDetailsPageProps {
   params: {
@@ -17,6 +17,7 @@ export default async function RestaurantDetailsPage({
   params,
 }: RestaurantDetailsPageProps) {
   const user = await authMiddleware();
+  const { id } = await params;
 
   if (!user || (user.role !== "SUPERADMIN" && user.role !== "ADMIN")) {
     redirect("/");
@@ -24,7 +25,7 @@ export default async function RestaurantDetailsPage({
 
   const restaurant = await prisma.restaurant.findUnique({
     where: {
-      id: params.id,
+      id,
     },
     include: {
       owner: true,
@@ -40,14 +41,14 @@ export default async function RestaurantDetailsPage({
 
     await prisma.restaurant.update({
       where: {
-        id: params.id,
+        id,
       },
       data: {
         approved: true,
       },
     });
 
-    revalidatePath("/dash/restaurants"); // Revalidate listing page after approval
+    revalidatePath("/dash/restaurants");
     redirect("/dash/restaurants");
   }
 
@@ -102,15 +103,7 @@ export default async function RestaurantDetailsPage({
             </div>
 
             {!restaurant.approved && (
-              <form action={approveRestaurant}>
-                <Button
-                  type="submit"
-                  variant="default"
-                  className="cursor-pointer"
-                >
-                  Approve Restaurant
-                </Button>
-              </form>
+              <ApproveRestaurantButton approveRestaurant={approveRestaurant} />
             )}
           </div>
         </div>

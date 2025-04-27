@@ -16,7 +16,7 @@ export default function LoadingRestaurantsPage() {
         <SiteHeader />
 
         <div className="p-6 space-y-6">
-          <Skeleton className="h-10 w-1/3" /> {/* fake page title */}
+          <Skeleton className="h-8 w-1/3" /> {/* fake page title */}
 
           <div className="border rounded-lg overflow-x-auto">
             <table className="w-full text-sm">
