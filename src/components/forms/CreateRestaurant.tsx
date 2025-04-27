@@ -26,7 +26,7 @@ import { Loader2 } from "lucide-react";
 
 import CreateRestaurantSchema, {
   CreateRestaurantType,
-} from "@/lib/validations/restaurant";
+} from "@/validations/restaurant";
 import { useEffect } from "react";
 
 const CreateRestaurantForm = () => {

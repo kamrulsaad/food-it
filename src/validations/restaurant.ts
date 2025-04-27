@@ -1,8 +1,10 @@
-// lib/validations/restaurant.ts
+// validations/restaurant.ts
 import { z } from "zod";
 
 const CreateRestaurantSchema = z.object({
-  name: z.string().min(2, { message: "Restaurant name must be at least 2 characters" }),
+  name: z
+    .string()
+    .min(2, { message: "Restaurant name must be at least 2 characters" }),
   email: z.string().email(),
   phone: z.string().min(1),
   address: z.string().min(1),
@@ -11,7 +13,9 @@ const CreateRestaurantSchema = z.object({
   zipCode: z.string().min(1),
   logo: z.string().optional(),
   ownerId: z.string().min(1),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
+  password: z
+    .string()
+    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 export default CreateRestaurantSchema;

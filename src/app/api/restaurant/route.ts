@@ -1,7 +1,7 @@
-import slugify from "slugify"; 
-import bcrypt from "bcryptjs"; 
-import CreateRestaurantSchema from "@/lib/validations/restaurant";
-import { prisma } from "@/lib/utils";
+import slugify from "slugify";
+import bcrypt from "bcryptjs";
+import CreateRestaurantSchema from "@/validations/restaurant";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   try {
