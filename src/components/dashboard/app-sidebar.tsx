@@ -26,15 +26,10 @@ import Link from "next/link";
 
 // Updated relevant data
 const data = {
-  user: {
-    name: "Admin",
-    email: "admin@example.com",
-    avatar: "/avatars/admin.jpg", // you can replace this with your admin avatar later
-  },
   navMain: [
     {
       title: "Dashboard",
-      url: "/dash",
+      url: "/dash/charts",
       icon: IconDashboard,
     },
     {
@@ -80,7 +75,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               <Link href="/dash" className="cursor-pointer">
                 <IconBuildingStore className="!size-5" />
                 <span className="text-base font-semibold ml-2">
-                  Food IT Admin
+                  Food IT Dashboard
                 </span>
               </Link>
             </SidebarMenuButton>

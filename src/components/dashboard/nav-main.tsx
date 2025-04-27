@@ -24,7 +24,10 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item, idx) => (
             <SidebarMenuItem key={idx}>
-              <SidebarMenuButton isActive={pathname === item.url} asChild>
+              <SidebarMenuButton
+                isActive={pathname.startsWith(item.url)}
+                asChild
+              >
                 <Link
                   href={item.url}
                   className="flex items-center gap-2 cursor-pointer"
