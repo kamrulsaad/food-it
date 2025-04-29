@@ -29,26 +29,60 @@ model User {
   @@map("users")
 }
 
+model City {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  restaurants Restaurant[]
+
+  @@map("cities")
+}
+
+model Category {
+  id        String     @id @default(uuid())
+  name      String     @unique
+  menuItems MenuItem[]
+
+  @@map("categories")
+}
+
+model Variant {
+  id         String   @id @default(uuid())
+  name       String
+  price      Int
+  menuItem   MenuItem @relation(fields: [menuItemId], references: [id])
+  menuItemId String
+
+  @@map("variants")
+}
+
 model Restaurant {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  slug        String  @unique
-  email       String
-  phone       String
-  address     String
-  city        String
-  zipCode     String
-  state       String
-  logo        String?
-  approved    Boolean @default(false)
-  ownerId     String  @unique
-  owner       User    @relation(fields: [ownerId], references: [clerkId])
+  id           String    @id @default(uuid())
+  name         String
+  description  String?
+  email        String
+  phone        String
+  address      String
+  city         String
+  zipCode      String
+  state        String
+  logo         String?
+  coverPhoto   String?
+  approved     Boolean   @default(false)
+  openingTime  String? // e.g., "10:00 AM"
+  closingTime  String? // e.g., "10:00 PM"
+  workingDays  Weekday[] // e.g., [MONDAY, TUESDAY, ...]
+  deliveryTime String? // e.g., "30-45 min"
+  deliveryFee  Int       @default(0)
+
+  cityId  String?
+  cityRef City?   @relation(fields: [cityId], references: [id])
+  ownerId String  @unique
+  owner   User    @relation(fields: [ownerId], references: [clerkId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  MenuItem MenuItem[]
+  menuItems MenuItem[]
 
   @@map("restaurants")
 }
@@ -62,6 +96,10 @@ model MenuItem {
   available    Boolean    @default(false)
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  categoryId   String?
+  category     Category?  @relation(fields: [categoryId], references: [id])
+
+  variants Variant[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -76,4 +114,14 @@ enum Role {
   RESTATURANT_OWNER
   RESTATURANT_ADMIN
   RIDER
+}
+
+enum Weekday {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }

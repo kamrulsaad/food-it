@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import CreateRestaurantSchema from "@/validations/restaurant";
 import prisma from "@/lib/prisma";
 import { authMiddleware } from "@/lib/auth";
@@ -8,8 +7,6 @@ export async function POST(req: Request) {
   try {
     const body = await req.json();
     const data = CreateRestaurantSchema.parse(body);
-
-    const slug = slugify(data.name, { lower: true });
 
     const restaurant = await prisma.restaurant.create({
       data: {
@@ -22,7 +19,6 @@ export async function POST(req: Request) {
         zipCode: data.zipCode,
         logo: data.logo,
         ownerId: data.ownerId,
-        slug,
       },
     });
 
