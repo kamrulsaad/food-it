@@ -8,6 +8,8 @@ import {
   IconBike,
   IconSettings,
   IconUsers,
+  IconClipboardPlus,
+  IconBuildingWarehouse,
 } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/dashboard/nav-main";
@@ -24,9 +26,12 @@ import {
 } from "@/components/ui/sidebar";
 import Link from "next/link";
 
-// Updated relevant data
-const data = {
-  navMain: [
+interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
+  role?: string;
+}
+
+export function AppSidebar({ role, ...props }: AppSidebarProps) {
+  const adminNavMain = [
     {
       title: "Dashboard",
       url: "/dash/charts",
@@ -52,17 +57,50 @@ const data = {
       url: "/dash/orders",
       icon: IconListDetails,
     },
-  ],
-  navSecondary: [
+  ];
+
+  const ownerNavMain = [
+    {
+      title: "Dashboard",
+      url: "/dash/charts",
+      icon: IconDashboard,
+    },
+    {
+      title: "My Menu Items",
+      url: "/dash/menu",
+      icon: IconClipboardPlus,
+    },
+    {
+      title: "Restaurant Settings",
+      url: "/dash/restaurant-settings",
+      icon: IconBuildingWarehouse,
+    },
+    {
+      title: "Orders",
+      url: "/dash/orders",
+      icon: IconListDetails,
+    },
+  ];
+
+  const adminNavSecondary = [
     {
       title: "Settings",
       url: "/dash/settings",
       icon: IconSettings,
     },
-  ],
-};
+  ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const ownerNavSecondary = [
+    {
+      title: "Profile Settings",
+      url: "/dash/settings",
+      icon: IconSettings,
+    },
+  ];
+
+  const navMain = role === "RESTATURANT_OWNER" ? ownerNavMain : adminNavMain;
+  const navSecondary = role === "RESTATURANT_OWNER" ? ownerNavSecondary : adminNavSecondary;
+
   return (
     <Sidebar collapsible="offcanvas" {...props}>
       <SidebarHeader>
@@ -84,8 +122,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
 
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={navMain} />
+        <NavSecondary items={navSecondary} className="mt-auto" />
       </SidebarContent>
 
       <SidebarFooter>

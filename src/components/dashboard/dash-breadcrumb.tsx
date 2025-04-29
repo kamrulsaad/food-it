@@ -43,6 +43,9 @@ export function DashboardBreadcrumb() {
         // Skip the first segment (which is always "dash")
         if (index === 0) return null;
 
+        if (segment === "admin" || segment === "rider" || segment === "owner")
+          return null;
+
         const href = "/" + paths.slice(0, index + 1).join("/");
         const isLast = index === paths.length - 1;
         const label = formatBreadcrumb(segment);
