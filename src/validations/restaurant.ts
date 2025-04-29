@@ -18,5 +18,20 @@ const CreateRestaurantSchema = z.object({
     .min(6, { message: "Password must be at least 6 characters" }),
 });
 
+export const UpdateRestaurantSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  address: z
+    .string()
+    .min(5, { message: "Address must be at least 5 characters." }),
+  city: z.string().min(2, { message: "City must be at least 2 characters." }),
+  zipCode: z
+    .string()
+    .min(4, { message: "Zip Code must be at least 4 characters." }),
+  state: z.string().min(2, { message: "State must be at least 2 characters." }),
+  logo: z.string().optional(),
+});
+
+export type UpdateRestaurantType = z.infer<typeof UpdateRestaurantSchema>;
+
 export default CreateRestaurantSchema;
 export type CreateRestaurantType = z.infer<typeof CreateRestaurantSchema>;

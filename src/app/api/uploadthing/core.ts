@@ -4,6 +4,14 @@ import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
+const authenticateUser = async () => {
+  const user = await authMiddleware();
+
+  if (!user?.id) throw new UploadThingError("Unauthorized");
+
+  return { userId: user.id, email: user.email };
+};
+
 export const ourFileRouter = {
   menuItem: f({
     image: {
@@ -11,16 +19,13 @@ export const ourFileRouter = {
       maxFileCount: 1,
     },
   })
-    .middleware(async () => {
-      const user = await authMiddleware();
-
-      if (!user?.id) throw new UploadThingError("Unauthorized");
-
-      return { userId: user.id, email: user.email };
-    })
-    .onUploadComplete(async ({ metadata, file }) => {
-      return { uploadedBy: metadata.userId, fileUrl: file.ufsUrl };
-    }),
+    .middleware(authenticateUser)
+    .onUploadComplete(() => {}),
+  restaurantLogo: f({
+    image: { maxFileSize: "4MB", maxFileCount: 1 },
+  })
+    .middleware(authenticateUser)
+    .onUploadComplete(() => {}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

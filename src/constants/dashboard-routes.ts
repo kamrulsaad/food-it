@@ -52,8 +52,8 @@ const ownerNavMain = [
     icon: IconClipboardPlus,
   },
   {
-    title: "Restaurant Settings",
-    url: ownerRoute + "/restaurant-settings",
+    title: "Restaurant Details",
+    url: ownerRoute + "/restaurant-details",
     icon: IconBuildingWarehouse,
   },
   {
@@ -84,4 +84,6 @@ export const DashboardRoutes = {
   ownerNavMain,
   adminNavSecondary,
   ownerNavSecondary,
+  adminRoute,
+  ownerRoute,
 };

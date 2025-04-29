@@ -1,7 +1,8 @@
 import slugify from "slugify";
-import bcrypt from "bcryptjs";
 import CreateRestaurantSchema from "@/validations/restaurant";
 import prisma from "@/lib/prisma";
+import { authMiddleware } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
@@ -9,8 +10,6 @@ export async function POST(req: Request) {
     const data = CreateRestaurantSchema.parse(body);
 
     const slug = slugify(data.name, { lower: true });
-
-    const hashedPassword = await bcrypt.hash(data.password, 10);
 
     const restaurant = await prisma.restaurant.create({
       data: {
@@ -24,7 +23,6 @@ export async function POST(req: Request) {
         logo: data.logo,
         ownerId: data.ownerId,
         slug,
-        password: hashedPassword,
       },
     });
 
@@ -41,4 +39,27 @@ export async function POST(req: Request) {
     console.error(error);
     return new Response("Internal Server Error", { status: 500 });
   }
+}
+
+export async function PUT(req: Request) {
+  const user = await authMiddleware();
+  if (!user || user.role !== "RESTATURANT_OWNER") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const body = await req.json();
+
+  const restaurant = await prisma.restaurant.update({
+    where: { ownerId: user.clerkId },
+    data: {
+      name: body.name,
+      address: body.address,
+      city: body.city,
+      zipCode: body.zipCode,
+      state: body.state,
+      logo: body.logo,
+    },
+  });
+
+  return NextResponse.json(restaurant);
 }
