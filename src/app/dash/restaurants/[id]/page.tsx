@@ -10,10 +10,9 @@ import { ApproveRestaurantButton } from "@/components/dashboard/approve-restaura
 export default async function RestaurantDetailsPage({
   params,
 }: {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const user = await authMiddleware();
 
   if (!user || (user.role !== "SUPERADMIN" && user.role !== "ADMIN")) {
@@ -22,7 +21,7 @@ export default async function RestaurantDetailsPage({
 
   const restaurant = await prisma.restaurant.findUnique({
     where: {
-      id: params.id,
+      id,
     },
     include: {
       owner: true,
@@ -38,7 +37,7 @@ export default async function RestaurantDetailsPage({
 
     await prisma.restaurant.update({
       where: {
-        id: params.id,
+        id,
       },
       data: {
         approved: true,
