@@ -91,10 +91,10 @@ export default async function RestaurantDetailsPage({
             <div className="border rounded-lg p-4">
               <h2 className="font-semibold text-lg mb-2">Owner Info</h2>
               <p>
-                <strong>Name:</strong> {restaurant.owner?.email || "N/A"}
+                <strong>ID:</strong> {restaurant.owner?.clerkId || "N/A"}
               </p>
               <p>
-                <strong>Clerk ID:</strong> {restaurant.owner?.clerkId || "N/A"}
+                <strong>Email:</strong> {restaurant.owner?.email || "N/A"}
               </p>
             </div>
 
