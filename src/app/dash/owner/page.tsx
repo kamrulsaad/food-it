@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
-type Props = {}
+const RestaurantDashboard = () => {
+  return <div>RestaurantDashboard</div>;
+};
 
-const RestaurantDashboard = (props: Props) => {
-  return (
-    <div>RestaurantDashboard</div>
-  )
-}
-
-export default RestaurantDashboard
+export default RestaurantDashboard;

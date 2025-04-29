@@ -25,7 +25,7 @@ export default async function OwnerDashLayout({
   const isApproved = restaurant?.approved;
 
   return (
-    <main className="pl-4 pt-2 relative min-h-[calc(100vh-34px)] flex flex-col">
+    <main className="px-4 pt-2 relative min-h-[calc(100vh-34px)] flex flex-col">
       {!isApproved && (
         <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/10 backdrop-blur-xs">
           <div className="text-center px-4">

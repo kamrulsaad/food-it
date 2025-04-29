@@ -47,7 +47,7 @@ const ownerNavMain = [
     icon: IconDashboard,
   },
   {
-    title: "My Menu Items",
+    title: "Menu",
     url: ownerRoute + "/menu",
     icon: IconClipboardPlus,
   },
