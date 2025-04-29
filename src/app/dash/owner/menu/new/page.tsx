@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import FileUpload from "@/components/global/file-upload";
 
 export default function NewMenuItemPage() {
   const router = useRouter();
@@ -112,9 +113,9 @@ export default function NewMenuItemPage() {
               name="imageUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Image URL</FormLabel>
+                  <FormLabel>Image</FormLabel>
                   <FormControl>
-                    <Input placeholder="https://..." {...field} />
+                    <FileUpload value={field.value} onChange={field.onChange} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
