@@ -5,11 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
-
-import {
-  CreateMenuItemSchema,
-  CreateMenuItemType,
-} from "@/validations/menu-item";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,9 +17,18 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  CreateMenuItemSchema,
+  CreateMenuItemType,
+} from "@/validations/menu-item";
 import FileUpload from "@/components/global/file-upload";
+import { MenuItem } from "../../../prisma/generated/prisma";
 
-export default function NewMenuItemPage() {
+interface EditMenuItemFormProps {
+  menuItem: MenuItem;
+}
+
+export default function EditMenuItemForm({ menuItem }: EditMenuItemFormProps) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -32,10 +36,10 @@ export default function NewMenuItemPage() {
     resolver: zodResolver(CreateMenuItemSchema),
     mode: "onSubmit",
     defaultValues: {
-      name: "",
-      description: "",
-      price: "",
-      imageUrl: "",
+      name: menuItem.name || "",
+      description: menuItem.description || "",
+      price: menuItem.price.toString() || "",
+      imageUrl: menuItem.imageUrl || "",
     },
   });
 
@@ -43,15 +47,15 @@ export default function NewMenuItemPage() {
     try {
       setIsLoading(true);
 
-      const res = await fetch("/api/menu-items", {
-        method: "POST",
+      const res = await fetch(`/api/menu-items/${menuItem.id}`, {
+        method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
 
-      if (!res.ok) throw new Error("Failed to create menu item");
+      if (!res.ok) throw new Error();
 
-      toast.success("Menu item created!");
+      toast.success("Menu item updated!");
       router.push("/dash/owner/menu");
     } catch (err) {
       console.error(err);
@@ -64,7 +68,7 @@ export default function NewMenuItemPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Create New Menu Item</CardTitle>
+        <CardTitle>Edit Menu Item</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -82,6 +86,7 @@ export default function NewMenuItemPage() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="description"
@@ -95,6 +100,7 @@ export default function NewMenuItemPage() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="price"
@@ -108,6 +114,7 @@ export default function NewMenuItemPage() {
                 </FormItem>
               )}
             />
+
             <FormField
               control={form.control}
               name="imageUrl"
@@ -125,12 +132,13 @@ export default function NewMenuItemPage() {
                 </FormItem>
               )}
             />
+
             <Button
               className="cursor-pointer"
               type="submit"
               disabled={isLoading}
             >
-              {isLoading ? "Saving..." : "Create Item"}
+              {isLoading ? "Saving..." : "Update Item"}
             </Button>
           </form>
         </Form>

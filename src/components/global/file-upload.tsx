@@ -4,13 +4,19 @@ import { UploadDropzone } from "@/lib/uploadthing";
 import { X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 
 interface FileUploadProps {
+  endpoint: keyof typeof ourFileRouter;
   onChange: (url: string) => void;
   value?: string;
 }
 
-export default function FileUpload({ onChange, value }: FileUploadProps) {
+export default function FileUpload({
+  onChange,
+  value,
+  endpoint,
+}: FileUploadProps) {
   if (value) {
     return (
       <div className="flex flex-col justify-center items-center gap-2">
@@ -41,7 +47,7 @@ export default function FileUpload({ onChange, value }: FileUploadProps) {
         button: "bg-primary px-4 hover:bg-orange-600 cursor-pointer",
       }}
       className="cursor-pointer transition-all duration-300"
-      endpoint={"menuItem"}
+      endpoint={endpoint}
       onClientUploadComplete={(res) => {
         onChange(res?.[0].url ?? "");
       }}

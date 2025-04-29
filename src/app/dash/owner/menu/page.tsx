@@ -1,7 +1,9 @@
 import { authMiddleware } from "@/lib/auth";
 import prisma from "@/lib/prisma";
-import Image from "next/image";
 import Link from "next/link";
+import { DataTable } from "@/components/ui/data-table";
+import { PlusIcon } from "lucide-react";
+import { menuColumns } from "@/components/columns/menu-items";
 
 export default async function MenuPage() {
   const user = await authMiddleware();
@@ -28,49 +30,17 @@ export default async function MenuPage() {
   });
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Menu Items</h1>
         <Link
           href="/dash/owner/menu/new"
-          className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-orange-700 transition cursor-pointer"
+          className="px-4 py-2 bg-orange-600 text-white rounded-md text-sm font-medium hover:bg-orange-700 transition cursor-pointer flex items-center gap-2"
         >
-          + Add New Item
+          <PlusIcon className="h-4" /> Add New Item
         </Link>
       </div>
-
-      {menuItems.length === 0 ? (
-        <p className="text-sm text-gray-600">
-          No items found. Add your first one.
-        </p>
-      ) : (
-        <ul className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {menuItems.map((item) => (
-            <li
-              key={item.id}
-              className="p-4 border rounded-md bg-white shadow-sm"
-            >
-              {item.imageUrl && (
-                <Image
-                  src={item.imageUrl}
-                  alt={item.name}
-                  width={400}
-                  height={300}
-                  className="rounded mb-3 object-cover w-full h-40"
-                />
-              )}
-              <h3 className="text-lg font-bold">{item.name}</h3>
-              <p className="text-sm text-gray-700">{item.description}</p>
-              <p className="text-orange-600 font-medium mt-2">
-                ৳ {item.price.toFixed(2)}
-              </p>
-              <p className="text-xs text-gray-500 mt-1">
-                {item.available ? "Available" : "Not available"}
-              </p>
-            </li>
-          ))}
-        </ul>
-      )}
+      <DataTable columns={menuColumns} data={menuItems} />
     </div>
   );
 }

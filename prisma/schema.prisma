@@ -57,7 +57,7 @@ model MenuItem {
   id           String     @id @default(uuid())
   name         String
   description  String?
-  price        Decimal    @db.Decimal(10, 2)
+  price        Int
   imageUrl     String?
   available    Boolean    @default(true)
   restaurantId String
