@@ -7,17 +7,14 @@ import { SiteHeader } from "@/components/dashboard/site-header";
 import { revalidatePath } from "next/cache";
 import { ApproveRestaurantButton } from "@/components/dashboard/approve-restaurant-button";
 
-interface RestaurantDetailsPageProps {
+export default async function RestaurantDetailsPage({
+  params,
+}: {
   params: {
     id: string;
   };
-}
-
-export default async function RestaurantDetailsPage({
-  params,
-}: RestaurantDetailsPageProps) {
+}) {
   const user = await authMiddleware();
-  const { id } = await params;
 
   if (!user || (user.role !== "SUPERADMIN" && user.role !== "ADMIN")) {
     redirect("/");
@@ -25,7 +22,7 @@ export default async function RestaurantDetailsPage({
 
   const restaurant = await prisma.restaurant.findUnique({
     where: {
-      id,
+      id: params.id,
     },
     include: {
       owner: true,
@@ -41,7 +38,7 @@ export default async function RestaurantDetailsPage({
 
     await prisma.restaurant.update({
       where: {
-        id,
+        id: params.id,
       },
       data: {
         approved: true,
