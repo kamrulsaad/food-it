@@ -29,7 +29,7 @@ export default async function DashboardPage({
         } as React.CSSProperties
       }
     >
-      <AppSidebar />
+      <AppSidebar role={user.role} />
       <SidebarInset>
         <SiteHeader />
         {children}

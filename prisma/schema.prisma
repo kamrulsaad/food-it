@@ -36,7 +36,6 @@ model Restaurant {
   slug        String  @unique
   email       String
   phone       String
-  password    String
   address     String
   city        String
   zipCode     String
