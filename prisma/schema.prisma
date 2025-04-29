@@ -59,7 +59,7 @@ model MenuItem {
   description  String?
   price        Int
   imageUrl     String?
-  available    Boolean    @default(true)
+  available    Boolean    @default(false)
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
 

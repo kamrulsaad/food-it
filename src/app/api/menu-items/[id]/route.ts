@@ -32,6 +32,31 @@ export async function PUT(
   return NextResponse.json(updated);
 }
 
+export async function PATCH(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  const user = await authMiddleware();
+  if (!user || user.role !== "RESTATURANT_OWNER") {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const menuItem = await prisma.menuItem.findUnique({
+    where: { id: params.id },
+  });
+
+  if (!menuItem) {
+    return NextResponse.json({ error: "Item not found" }, { status: 404 });
+  }
+
+  const updated = await prisma.menuItem.update({
+    where: { id: params.id },
+    data: { available: !menuItem.available },
+  });
+
+  return NextResponse.json(updated);
+}
+
 export async function DELETE(
   req: Request,
   { params }: { params: { id: string } }

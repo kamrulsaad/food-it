@@ -10,8 +10,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
-import { MenuItem } from "../../../prisma/generated/prisma";
-import DeleteMenu from "./components/deletemenu";
+import { MenuItem } from "../../../../prisma/generated/prisma";
+import DeleteMenu from "./deletemenu";
+import ChangeStatus from "./changestatus";
 
 export const menuColumns: ColumnDef<MenuItem>[] = [
   {
@@ -86,6 +87,7 @@ export const menuColumns: ColumnDef<MenuItem>[] = [
                 View
               </Link>
             </DropdownMenuItem>
+            <ChangeStatus item={item} />
             <DropdownMenuItem asChild>
               <Link
                 href={`/dash/owner/menu/${item.id}/edit`}

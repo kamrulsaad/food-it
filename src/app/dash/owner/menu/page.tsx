@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { DataTable } from "@/components/ui/data-table";
 import { PlusIcon } from "lucide-react";
-import { menuColumns } from "@/components/columns/menu-items";
+import { menuColumns } from "@/components/columns/menu/menu-table";
 
 export default async function MenuPage() {
   const user = await authMiddleware();
