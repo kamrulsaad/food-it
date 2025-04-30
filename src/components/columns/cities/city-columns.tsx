@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontal } from "lucide-react";
 import Link from "next/link";
+import DeleteCity from "./deletecity";
+import ChangeStatus from "./changestatus";
 
 export const columns: ColumnDef<City>[] = [
   {
@@ -54,6 +56,7 @@ export const columns: ColumnDef<City>[] = [
                 View
               </Link>
             </DropdownMenuItem>
+            <ChangeStatus item={item} />
             <DropdownMenuItem asChild>
               <Link
                 href={`/dash/admin/cities/${item.id}/edit`}
@@ -62,6 +65,7 @@ export const columns: ColumnDef<City>[] = [
                 Edit
               </Link>
             </DropdownMenuItem>
+            <DeleteCity item={item} />
           </DropdownMenuContent>
         </DropdownMenu>
       );

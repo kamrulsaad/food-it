@@ -22,7 +22,7 @@ import { City } from "../../../prisma/generated/prisma";
 import { useRouter } from "next/navigation";
 import { cityExists } from "@/queries/cities";
 
-const CreateCityForm = ({ city }: { city: City }) => {
+const CreateCityForm = ({ city }: { city?: City }) => {
   const router = useRouter();
 
   const defaultValues = {
@@ -40,14 +40,14 @@ const CreateCityForm = ({ city }: { city: City }) => {
 
   const handleSubmit = async (values: CreateCityTyes) => {
     try {
-      if (city.name) {
-        const existingCity = await cityExists(values.name);
+      const existingCity = await cityExists(values.name);
 
-        if (existingCity) {
-          toast.error("City with this name already exists.");
-          return;
-        }
+      if (existingCity) {
+        toast.error("City with this name already exists.");
+        return;
+      }
 
+      if (city) {
         const res = await fetch(`/api/cities/${city.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

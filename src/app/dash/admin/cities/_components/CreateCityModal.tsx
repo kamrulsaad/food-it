@@ -14,7 +14,7 @@ export function CityFormModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add City</Button>
+        <Button className="cursor-pointer">Add City</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

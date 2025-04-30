@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { MenuItem } from "../../../../prisma/generated/prisma";
-import DeleteMenu from "./deletemenu";
+import DeleteMenu from "../cities/deletecity";
 import ChangeStatus from "./changestatus";
 
 export const menuColumns: ColumnDef<MenuItem>[] = [

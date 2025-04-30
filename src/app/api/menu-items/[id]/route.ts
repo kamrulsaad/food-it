@@ -24,7 +24,7 @@ export async function PUT(
     data: {
       name: parsed.data.name,
       description: parsed.data.description,
-      price: parseFloat(parsed.data.price),
+      price: parseInt(parsed.data.price),
       imageUrl: parsed.data.imageUrl,
     },
   });
