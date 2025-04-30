@@ -1,21 +1,22 @@
-// validations/restaurant.ts
+import { WEEKDAYS } from "@/constants/weekdays";
 import { z } from "zod";
 
-const CreateRestaurantSchema = z.object({
-  name: z
-    .string()
-    .min(2, { message: "Restaurant name must be at least 2 characters" }),
+export const CreateRestaurantSchema = z.object({
+  name: z.string().min(2),
   email: z.string().email(),
-  phone: z.string().min(1),
-  address: z.string().min(1),
-  city: z.string().min(1),
-  state: z.string().min(1),
-  zipCode: z.string().min(1),
-  logo: z.string().optional(),
+  phone: z.string().min(6),
+  address: z.string().min(5),
+  cityId: z.string().min(1),
+  state: z.string(),
+  zipCode: z.string(),
+  logo: z.string().url(),
+  coverPhoto: z.string().url(),
+  openingTime: z.string().optional(),
+  closingTime: z.string().optional(),
+  workingDays: z.array(z.enum(WEEKDAYS)),
+  deliveryTime: z.string().optional(),
+  deliveryFee: z.coerce.number().min(0),
   ownerId: z.string().min(1),
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
 });
 
 export const UpdateRestaurantSchema = z.object({

@@ -1,6 +1,9 @@
+import { Button } from "@/components/ui/button";
 import { authMiddleware } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { ArrowLeft } from "lucide-react";
 import { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
@@ -35,6 +38,11 @@ export default async function OwnerDashLayout({
             <p className="text-sm text-gray-600">
               Please wait for an admin to review and approve your application.
             </p>
+            <Link href={"/"}>
+              <Button variant="outline" className="mt-4 cursor-pointer">
+                <ArrowLeft /> Back to Home
+              </Button>
+            </Link>
           </div>
         </div>
       )}

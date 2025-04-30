@@ -1,6 +1,6 @@
-import CreateRestaurantSchema from "@/validations/restaurant";
-import prisma from "@/lib/prisma";
 import { authMiddleware } from "@/lib/auth";
+import prisma from "@/lib/prisma";
+import { CreateRestaurantSchema } from "@/validations/restaurant";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -14,26 +14,28 @@ export async function POST(req: Request) {
         email: data.email,
         phone: data.phone,
         address: data.address,
-        city: data.city,
+        cityId: data.cityId || null,
         state: data.state,
         zipCode: data.zipCode,
         logo: data.logo,
+        coverPhoto: data.coverPhoto || null,
+        openingTime: data.openingTime,
+        closingTime: data.closingTime,
+        workingDays: data.workingDays,
+        deliveryTime: data.deliveryTime,
+        deliveryFee: data.deliveryFee,
         ownerId: data.ownerId,
       },
     });
 
-    // Update user's role to RESTAURANT_OWNER
     await prisma.user.update({
       where: { clerkId: data.ownerId },
-      data: {
-        role: "RESTATURANT_OWNER",
-      },
+      data: { role: "RESTATURANT_OWNER" },
     });
 
-    return Response.json(restaurant);
+    return NextResponse.json(restaurant, { status: 201 });
   } catch (error) {
-    console.error(error);
-    return new Response("Internal Server Error", { status: 500 });
+    console.error("Create Restaurant Error:", error);
   }
 }
 
@@ -50,7 +52,6 @@ export async function PUT(req: Request) {
     data: {
       name: body.name,
       address: body.address,
-      city: body.city,
       zipCode: body.zipCode,
       state: body.state,
       logo: body.logo,

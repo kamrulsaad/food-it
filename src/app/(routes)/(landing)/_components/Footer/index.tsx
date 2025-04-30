@@ -5,8 +5,8 @@ import { Facebook, Instagram } from "lucide-react";
 
 const footerLinks = [
   [
+    { label: "Create Restaurant", href: "/r/create" },
     { label: "Help Center", href: "#" },
-    { label: "Dine-in", href: "#" },
     { label: "Careers", href: "#" },
     { label: "Become an Affiliate", href: "#" },
     { label: "Areas delivered in Dhaka", href: "#" },

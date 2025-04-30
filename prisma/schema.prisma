@@ -75,16 +75,15 @@ model Restaurant {
   email        String
   phone        String
   address      String
-  city         String
   zipCode      String
   state        String
   logo         String
   coverPhoto   String?
   approved     Boolean   @default(false)
-  openingTime  String? // e.g., "10:00 AM"
-  closingTime  String? // e.g., "10:00 PM"
-  workingDays  Weekday[] // e.g., [MONDAY, TUESDAY, ...]
-  deliveryTime String? // e.g., "30-45 min"
+  openingTime  String?
+  closingTime  String?
+  workingDays  Weekday[]
+  deliveryTime String?
   deliveryFee  Int       @default(0)
 
   cityId  String?

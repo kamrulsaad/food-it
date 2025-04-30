@@ -27,26 +27,47 @@ import { Loader2 } from "lucide-react";
 import CreateRestaurantSchema, {
   CreateRestaurantType,
 } from "@/validations/restaurant";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import FileUpload from "../global/file-upload";
+import { WEEKDAYS } from "@/constants/weekdays";
+import { City } from "../../../prisma/generated/prisma";
 
 const CreateRestaurantForm = () => {
   const router = useRouter();
   const { userId, isSignedIn } = useAuth();
   const { user } = useUser();
 
+  const [cities, setCities] = useState<City[]>([]);
+
+  useEffect(() => {
+    const fetchCities = async () => {
+      const res = await fetch("/api/cities");
+      const data = await res.json();
+      setCities(data);
+    };
+
+    fetchCities();
+  }, []);
+
   const form = useForm<CreateRestaurantType>({
     mode: "onSubmit",
     resolver: zodResolver(CreateRestaurantSchema),
     defaultValues: {
       name: "",
-      email: user?.emailAddresses[0]?.emailAddress || "",
+      email: user?.primaryEmailAddress?.emailAddress,
       phone: "",
       address: "",
-      city: "",
+      cityId: "",
       state: "",
       zipCode: "",
       logo: "",
       ownerId: userId || "",
+      coverPhoto: "",
+      openingTime: "",
+      closingTime: "",
+      workingDays: [],
+      deliveryTime: "",
+      deliveryFee: 0,
     },
   });
 
@@ -65,7 +86,7 @@ const CreateRestaurantForm = () => {
       }
 
       toast.success("Restaurant created successfully!");
-      router.push("/dashboard"); // Redirect after creation
+      router.push("/dash/owner"); // Redirect after creation
     } catch (error) {
       console.error(error);
       toast.error("Something went wrong.");
@@ -102,35 +123,41 @@ const CreateRestaurantForm = () => {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Restaurant Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      placeholder="Enter your restaurant name"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input {...field} disabled />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="flex flex-col md:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Restaurant Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Enter your restaurant name"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem className="flex-1 cursor-not-allowed">
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={user?.primaryEmailAddress?.emailAddress}
+                        {...field}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
               name="phone"
@@ -146,21 +173,162 @@ const CreateRestaurantForm = () => {
             />
             <FormField
               control={form.control}
-              name="password"
+              name="cityId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>City</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Password for restaurant dashboard"
+                    <select
                       {...field}
+                      className="w-full border rounded px-3 py-2"
+                    >
+                      <option value="">Select a city</option>
+                      {cities.map((city) => (
+                        <option key={city.id} value={city.id}>
+                          {city.name}
+                        </option>
+                      ))}
+                    </select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="logo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Restaurant Logo (Recommended Dimension: 400*400)
+                  </FormLabel>
+                  <FormControl>
+                    <FileUpload
+                      endpoint="restaurantLogo"
+                      value={field.value}
+                      onChange={field.onChange}
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
+
+            <FormField
+              control={form.control}
+              name="coverPhoto"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Cover Photo (Recommended Dimension: 1920*1080)
+                  </FormLabel>
+                  <FormControl>
+                    <FileUpload
+                      endpoint="restaurantLogo"
+                      value={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="openingTime"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Opening Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="closingTime"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Closing Time</FormLabel>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <FormField
+              control={form.control}
+              name="workingDays"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Working Days</FormLabel>
+                  <FormControl>
+                    <div className="flex flex-wrap gap-2">
+                      {WEEKDAYS.map((day) => (
+                        <label
+                          key={day}
+                          className="flex gap-1 items-center text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            value={day}
+                            checked={field.value.includes(day)}
+                            onChange={(e) => {
+                              const checked = e.target.checked;
+                              const newValue = checked
+                                ? [...field.value, day]
+                                : field.value.filter((d) => d !== day);
+                              field.onChange(newValue);
+                            }}
+                          />
+                          {day}
+                        </label>
+                      ))}
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="deliveryTime"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Delivery Time</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g., 30–45 min" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="deliveryFee"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Delivery Fee (BDT)</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             <FormField
               control={form.control}
               name="address"
@@ -175,19 +343,6 @@ const CreateRestaurantForm = () => {
               )}
             />
             <div className="flex flex-col md:flex-row gap-4">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="City" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="state"
@@ -216,7 +371,11 @@ const CreateRestaurantForm = () => {
               />
             </div>
 
-            <Button type="submit" disabled={isLoading} className="w-full">
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full cursor-pointer"
+            >
               {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
               Submit for Approval
             </Button>

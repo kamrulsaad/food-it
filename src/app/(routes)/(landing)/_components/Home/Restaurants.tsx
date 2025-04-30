@@ -44,7 +44,7 @@ export default async function RestaurantDeals() {
                   4.8 (250+)
                 </div>
                 <p className="text-xs text-gray-500 mb-1 truncate">
-                  {restaurant.city} • {restaurant.phone}
+                  {restaurant.cityRef?.name} • {restaurant.phone}
                 </p>
                 <p className="text-xs text-gray-500">15-30 min • ৳ Free</p>
               </div>

@@ -10,8 +10,17 @@ export const getApprovedRestaurants = async () => {
       name: true,
       logo: true,
       address: true,
-      city: true,
       phone: true,
+      deliveryFee: true,
+      deliveryTime: true,
+      openingTime: true,
+      closingTime: true,
+      cityRef: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
     },
   });
 };
