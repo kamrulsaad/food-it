@@ -20,7 +20,7 @@ export default async function RestaurantsPage() {
   });
 
   return (
-    <div className="p-6">
+    <div>
       <h1 className="text-2xl font-bold mb-6">Restaurants</h1>
 
       <div className="overflow-x-auto border rounded-lg">

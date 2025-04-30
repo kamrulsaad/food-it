@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/global/skeleton";
 
 export default function LoadingRestaurantsPage() {
   return (
-    <div className="p-6 space-y-6">
+    <div>
       <Skeleton className="h-8 w-1/3" /> {/* fake page title */}
       <div className="border rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
