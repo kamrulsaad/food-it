@@ -2,6 +2,7 @@
 import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { RestaurantPreview } from "@/lib/types";
+import { Package2Icon } from "lucide-react";
 
 export default function RestaurantCard({
   name,
@@ -21,16 +22,18 @@ export default function RestaurantCard({
         />
       </div>
 
-      <CardContent className="px-3 space-y-2">
+      <CardContent className="px-3 space-y-1">
         <div className="flex items-center gap-2">
           <h3 className="font-semibold text-sm line-clamp-1">{name}</h3>
         </div>
 
-        <div className="flex justify-between text-xs text-muted-foreground font-medium pt-1">
+        <div className="flex gap-2 text-xs text-muted-foreground font-medium pt-1">
           <span>From ৳{minPrice}</span>
-          <span>{deliveryTime} mins</span>
-          <span>৳{deliveryFee}</span>
+          <span>{deliveryTime}</span>
         </div>
+        <span className="flex items-center gap-0.5 text-xs text-muted-foreground font-medium">
+          <Package2Icon className="w-3.5" /> ৳{deliveryFee}
+        </span>
       </CardContent>
     </Card>
   );

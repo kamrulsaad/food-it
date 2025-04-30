@@ -2,6 +2,10 @@
 
 import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 type Category = {
   id: string;
@@ -23,6 +27,15 @@ export default function SidebarFilters() {
     router.push(`/r?${params.toString()}`);
   };
 
+  const resetFilters = () => {
+    const params = new URLSearchParams(window.location.search);
+    params.delete("sort");
+    params.delete("category");
+    params.delete("freeDelivery");
+    params.delete("openNow");
+    router.push(`/r?${params.toString()}`);
+  };
+
   useEffect(() => {
     const fetchCategories = async () => {
       const res = await fetch("/api/categories");
@@ -33,76 +46,97 @@ export default function SidebarFilters() {
   }, []);
 
   return (
-    <aside className="w-full bg-white border rounded-xl p-4 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4">Filters</h2>
-
+    <div className="space-y-6">
       {/* Sort By */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2">Sort by</h3>
+      <div>
+        <Label className="text-sm font-medium mb-2 block">Sort by</Label>
         <div className="space-y-1">
           {["deliveryTime", "price"].map((type) => (
-            <button
+            <Button
               key={type}
+              variant={
+                searchParams.get("sort") === type ? "secondary" : "ghost"
+              }
+              size="sm"
+              className="w-full justify-start text-left capitalize cursor-pointer"
               onClick={() => updateQuery("sort", type)}
-              className={`block w-full text-left px-3 py-1.5 rounded hover:bg-gray-100 ${
-                searchParams.get("sort") === type
-                  ? "bg-gray-200 font-semibold"
-                  : ""
-              }`}
             >
               {type === "deliveryTime" ? "Delivery Time" : "Price"}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
 
       {/* Category */}
-      <div className="mb-6">
-        <h3 className="font-medium mb-2">Category</h3>
-        <div className="space-y-1 max-h-40 overflow-y-auto">
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => updateQuery("category", cat.name)}
-              className={`block w-full text-left px-3 py-1.5 rounded hover:bg-gray-100 ${
-                searchParams.get("category") === cat.name
-                  ? "bg-gray-200 font-semibold"
-                  : ""
-              }`}
-            >
-              {cat.name}
-            </button>
-          ))}
+      <div>
+        <Label className="text-sm font-medium mb-2 block">Category</Label>
+        <Button
+          variant={!searchParams.get("category") ? "secondary" : "ghost"}
+          size="sm"
+          className="w-full justify-start text-left cursor-pointer"
+          onClick={() => updateQuery("category", null)}
+        >
+          All Categories
+        </Button>
+
+        <ScrollArea className="pr-2 mt-2">
+          <div className="space-y-1">
+            {categories.map((cat) => (
+              <Button
+                key={cat.id}
+                variant={
+                  searchParams.get("category") === cat.name
+                    ? "secondary"
+                    : "ghost"
+                }
+                size="sm"
+                className="w-full justify-start text-left cursor-pointer"
+                onClick={() => updateQuery("category", cat.name)}
+              >
+                {cat.name}
+              </Button>
+            ))}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Checkboxes */}
+      <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="cursor-pointer"
+            id="freeDelivery"
+            checked={searchParams.get("freeDelivery") === "1"}
+            onCheckedChange={(checked) =>
+              updateQuery("freeDelivery", checked ? "1" : null)
+            }
+          />
+          <Label htmlFor="freeDelivery">Free Delivery</Label>
+        </div>
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="cursor-pointer"
+            id="openNow"
+            checked={searchParams.get("openNow") === "1"}
+            onCheckedChange={(checked) =>
+              updateQuery("openNow", checked ? "1" : null)
+            }
+          />
+          <Label htmlFor="openNow">Open Now</Label>
         </div>
       </div>
 
-      {/* Delivery Fee */}
-      <div className="mb-4">
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            onChange={(e) =>
-              updateQuery("freeDelivery", e.target.checked ? "1" : null)
-            }
-            checked={searchParams.get("freeDelivery") === "1"}
-          />
-          <span>Free Delivery</span>
-        </label>
-      </div>
-
-      {/* Open Now */}
+      {/* Reset Button */}
       <div>
-        <label className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            onChange={(e) =>
-              updateQuery("openNow", e.target.checked ? "1" : null)
-            }
-            checked={searchParams.get("openNow") === "1"}
-          />
-          <span>Open Now</span>
-        </label>
+        <Button
+          variant="destructive"
+          size="sm"
+          className="w-full cursor-pointer"
+          onClick={resetFilters}
+        >
+          Reset Filters
+        </Button>
       </div>
-    </aside>
+    </div>
   );
 }

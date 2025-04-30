@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "./RestaurantCard";
 import { RestaurantPreview } from "@/lib/types";
+import RestaurantLoading from "./RestaurantLoading";
 
 export default function RestaurantGrid() {
   const [restaurants, setRestaurants] = useState<RestaurantPreview[]>([]);
@@ -29,13 +30,12 @@ export default function RestaurantGrid() {
     fetchRestaurants();
   }, []);
 
-  if (loading)
-    return <p className="py-10 text-center">Loading restaurants...</p>;
+  if (loading) return <RestaurantLoading />;
   if (!restaurants.length)
     return <p className="py-10 text-center">No restaurants found.</p>;
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-4 sm:gap-6">
       {restaurants.map((r) => (
         <RestaurantCard key={r.id} {...r} />
       ))}
