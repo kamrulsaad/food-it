@@ -1,5 +1,6 @@
 import {
   IconBike,
+  IconBuildingArch,
   IconBuildingStore,
   IconBuildingWarehouse,
   IconClipboardPlus,
@@ -38,6 +39,17 @@ const adminNavMain = [
     url: adminRoute + "/orders",
     icon: IconListDetails,
   },
+  {
+    title: "Categories",
+    url: adminRoute + "/categories",
+    icon: IconClipboardPlus,
+  },
+  {
+    title: "Cities",
+    url: adminRoute + "/cities",
+    icon: IconBuildingArch,
+  },
+  
 ];
 
 const ownerNavMain = [

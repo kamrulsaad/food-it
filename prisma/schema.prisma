@@ -30,10 +30,15 @@ model User {
 }
 
 model City {
-  id          String       @id @default(uuid())
-  name        String       @unique
-  restaurants Restaurant[]
+  id        String  @id @default(uuid())
+  name      String  @unique
+  available Boolean @default(false)
+  imageUrl  String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  restaurants Restaurant[]
   @@map("cities")
 }
 
@@ -65,7 +70,7 @@ model Restaurant {
   city         String
   zipCode      String
   state        String
-  logo         String?
+  logo         String
   coverPhoto   String?
   approved     Boolean   @default(false)
   openingTime  String? // e.g., "10:00 AM"
@@ -92,7 +97,7 @@ model MenuItem {
   name         String
   description  String?
   price        Int
-  imageUrl     String?
+  imageUrl     String
   available    Boolean    @default(false)
   restaurantId String
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
