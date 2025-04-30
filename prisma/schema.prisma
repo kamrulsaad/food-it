@@ -26,6 +26,7 @@ model User {
 
   Restaurant Restaurant[]
   Order      Order[]
+  Rating     Rating[]
 
   @@map("users")
 }
@@ -96,6 +97,7 @@ model Restaurant {
 
   menuItems MenuItem[]
   Order     Order[]
+  Rating    Rating[]
 
   @@map("restaurants")
 }
@@ -174,6 +176,22 @@ model Rider {
   Order Order[]
 
   @@map("riders")
+}
+
+model Rating {
+  id           String  @id @default(uuid())
+  userId       String
+  restaurantId String
+  rating       Int
+  comment      String?
+
+  user       User       @relation(fields: [userId], references: [clerkId])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("ratings")
 }
 
 enum OrderStatus {
