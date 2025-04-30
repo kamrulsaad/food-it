@@ -26,7 +26,6 @@ model User {
 
   Restaurant Restaurant[]
   Order      Order[]
-  Rating     Rating[]
 
   @@map("users")
 }
@@ -79,25 +78,24 @@ model Restaurant {
   zipCode      String
   state        String
   logo         String
-  coverPhoto   String?
+  coverPhoto   String
   approved     Boolean   @default(false)
-  openingTime  String?
-  closingTime  String?
+  openingTime  String
+  closingTime  String
   workingDays  Weekday[]
-  deliveryTime String?
+  deliveryTime String
   deliveryFee  Int       @default(0)
 
-  cityId  String?
-  cityRef City?   @relation(fields: [cityId], references: [id])
-  ownerId String  @unique
-  owner   User    @relation(fields: [ownerId], references: [clerkId])
+  cityId  String
+  cityRef City   @relation(fields: [cityId], references: [id])
+  ownerId String @unique
+  owner   User   @relation(fields: [ownerId], references: [clerkId])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   menuItems MenuItem[]
   Order     Order[]
-  Rating    Rating[]
 
   @@map("restaurants")
 }
@@ -176,22 +174,6 @@ model Rider {
   Order Order[]
 
   @@map("riders")
-}
-
-model Rating {
-  id           String  @id @default(uuid())
-  userId       String
-  restaurantId String
-  rating       Int
-  comment      String?
-
-  user       User       @relation(fields: [userId], references: [clerkId])
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@map("ratings")
 }
 
 enum OrderStatus {

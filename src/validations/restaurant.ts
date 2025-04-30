@@ -11,10 +11,10 @@ export const CreateRestaurantSchema = z.object({
   zipCode: z.string(),
   logo: z.string().url(),
   coverPhoto: z.string().url(),
-  openingTime: z.string().optional(),
-  closingTime: z.string().optional(),
+  openingTime: z.string(),
+  closingTime: z.string(),
   workingDays: z.array(z.enum(WEEKDAYS)),
-  deliveryTime: z.string().optional(),
+  deliveryTime: z.string(),
   deliveryFee: z.coerce.number().min(0),
   ownerId: z.string().min(1),
 });

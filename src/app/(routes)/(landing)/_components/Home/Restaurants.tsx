@@ -43,9 +43,6 @@ export default async function RestaurantDeals() {
                   <Star size={12} className="text-yellow-500 mr-1" />
                   4.8 (250+)
                 </div>
-                <p className="text-xs text-gray-500 mb-1 truncate">
-                  {restaurant.cityRef?.name} • {restaurant.phone}
-                </p>
                 <p className="text-xs text-gray-500">15-30 min • ৳ Free</p>
               </div>
             </Link>
