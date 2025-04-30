@@ -25,6 +25,7 @@ model User {
   updatedAt DateTime @updatedAt
 
   Restaurant Restaurant[]
+  Order      Order[]
 
   @@map("users")
 }
@@ -95,6 +96,7 @@ model Restaurant {
   updatedAt DateTime @updatedAt
 
   menuItems MenuItem[]
+  Order     Order[]
 
   @@map("restaurants")
 }
@@ -113,10 +115,72 @@ model MenuItem {
 
   variants Variant[]
 
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  OrderItem OrderItem[]
+
+  @@map("menu_items")
+}
+
+model Order {
+  id           String      @id @default(uuid())
+  userId       String
+  restaurantId String
+  status       OrderStatus @default(PENDING)
+  totalAmount  Int
+  deliveryFee  Int         @default(0)
+  address      String?
+
+  user       User       @relation(fields: [userId], references: [clerkId])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  OrderItem OrderItem[]
+  Rider     Rider[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id         String @id @default(uuid())
+  orderId    String
+  menuItemId String
+  quantity   Int
+
+  order    Order    @relation(fields: [orderId], references: [id])
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@map("menu_items")
+  @@map("order_items")
+}
+
+model Rider {
+  id          String  @id @default(uuid())
+  name        String
+  email       String  @unique
+  phone       String  @unique
+  address     String
+  city        String
+  zipCode     String
+  state       String
+  vehicleType String
+  available   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  Order Order[]
+
+  @@map("riders")
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
 }
 
 enum Role {
