@@ -58,7 +58,7 @@ const CategoryForm = ({ category }: { category?: City }) => {
           throw new Error("Failed to update category");
         }
 
-        router.back();
+        router.push('/dash/admin/categories');
         toast.success("Category updated successfully!");
         return;
       } else {
