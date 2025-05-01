@@ -8,6 +8,7 @@ import {
   UserButton,
 } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
+import CartDrawer from "@/components/global/cart-drawer";
 
 const navItems = [
   { href: "/", label: "Home" },
@@ -28,11 +29,17 @@ export default async function MobileNavbar() {
             height={40}
             className="h-auto w-auto"
           />
-          <p className="text-primary text-2xl">foodit</p>
+          <p className="ml-2 text-primary text-2xl font-bold tracking-tight">
+            foodit
+          </p>
         </Link>
 
         {/* Mobile Menu Button */}
         <MobileMenu navItems={navItems} />
+
+        <div className="flex items-center gap-2">
+          <CartDrawer />
+        </div>
 
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-4 text-xl font-semibold">
