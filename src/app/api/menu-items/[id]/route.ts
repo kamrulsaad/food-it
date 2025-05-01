@@ -3,10 +3,18 @@ import prisma from "@/lib/prisma";
 import { CreateMenuItemSchema } from "@/validations/menu-item";
 import { NextResponse } from "next/server";
 
+interface MenuItems {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
 export async function PUT(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: MenuItems["params"] }
 ) {
+  const { id } = await params;
+
   const user = await authMiddleware();
   if (!user || user.role !== "RESTATURANT_OWNER") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -20,7 +28,7 @@ export async function PUT(
   }
 
   const updated = await prisma.menuItem.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       name: parsed.data.name,
       description: parsed.data.description,
@@ -34,15 +42,17 @@ export async function PUT(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: MenuItems["params"] }
 ) {
+  const { id } = await params;
+
   const user = await authMiddleware();
   if (!user || user.role !== "RESTATURANT_OWNER") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const menuItem = await prisma.menuItem.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!menuItem) {
@@ -50,7 +60,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.menuItem.update({
-    where: { id: params.id },
+    where: { id },
     data: { available: !menuItem.available },
   });
 
@@ -59,15 +69,17 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: MenuItems["params"] }
 ) {
+  const { id } = await params;
+
   const user = await authMiddleware();
   if (!user || user.role !== "RESTATURANT_OWNER") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const item = await prisma.menuItem.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!item) {
@@ -75,7 +87,7 @@ export async function DELETE(
   }
 
   await prisma.menuItem.delete({
-    where: { id: params.id },
+    where: { id },
   });
 
   return NextResponse.json({ message: "Deleted successfully" });
