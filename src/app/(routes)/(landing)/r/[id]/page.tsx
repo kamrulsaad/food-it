@@ -5,12 +5,14 @@ import Image from "next/image";
 import MenuItemCard from "./_components/MenuItemCard";
 
 interface Props {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 export default async function RestaurantPage({ params }: Props) {
+  const { id } = await params;
+
   const restaurant = await prisma.restaurant.findUnique({
-    where: { id: params.id, approved: true },
+    where: { id, approved: true },
     include: {
       menuItems: {
         where: { available: true },
