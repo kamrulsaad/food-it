@@ -36,15 +36,17 @@ export async function PUT(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: City["params"] }
 ) {
+  const { id } = await params;
+
   const user = await authMiddleware();
   if (!user || user.role !== "SUPERADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const city = await prisma.city.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!city) {
@@ -52,7 +54,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.city.update({
-    where: { id: params.id },
+    where: { id },
     data: { available: !city.available },
   });
 
