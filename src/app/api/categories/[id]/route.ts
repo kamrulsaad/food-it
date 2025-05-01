@@ -36,15 +36,17 @@ export async function PUT(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Category["params"] }
 ) {
+  const { id } = await params;
+
   const user = await authMiddleware();
   if (!user || user.role !== "SUPERADMIN") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const category = await prisma.category.findUnique({
-    where: { id: params.id },
+    where: { id },
   });
 
   if (!category) {
@@ -52,7 +54,7 @@ export async function PATCH(
   }
 
   const updated = await prisma.category.update({
-    where: { id: params.id },
+    where: { id },
     data: { available: !category.available },
   });
 
