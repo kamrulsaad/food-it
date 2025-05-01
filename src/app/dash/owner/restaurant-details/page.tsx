@@ -14,6 +14,9 @@ export default async function RestaurantSettingsPage() {
 
   const restaurant = await prisma.restaurant.findUnique({
     where: { ownerId: user.clerkId },
+    include: {
+      cityRef: true,
+    },
   });
 
   if (!restaurant) notFound();
@@ -42,7 +45,7 @@ export default async function RestaurantSettingsPage() {
           </div>
           <div>
             <h2 className="text-muted-foreground">City</h2>
-            <p className="text-lg font-semibold">{restaurant.city}</p>
+            <p className="text-lg font-semibold">{restaurant.cityRef.name}</p>
           </div>
           <div>
             <h2 className="text-muted-foreground">Zip Code</h2>

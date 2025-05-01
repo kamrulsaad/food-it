@@ -24,7 +24,6 @@ export const UpdateRestaurantSchema = z.object({
   address: z
     .string()
     .min(5, { message: "Address must be at least 5 characters." }),
-  city: z.string().min(2, { message: "City must be at least 2 characters." }),
   zipCode: z
     .string()
     .min(4, { message: "Zip Code must be at least 4 characters." }),

@@ -46,7 +46,6 @@ export default function RestaurantSettingsForm({
     defaultValues: {
       name: restaurant.name,
       address: restaurant.address,
-      city: restaurant.city,
       zipCode: restaurant.zipCode,
       state: restaurant.state,
       logo: restaurant.logo || "",
@@ -127,20 +126,6 @@ export default function RestaurantSettingsForm({
                   <FormLabel>Address</FormLabel>
                   <FormControl>
                     <Textarea placeholder="Restaurant Address" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input placeholder="City" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
