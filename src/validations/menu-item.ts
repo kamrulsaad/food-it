@@ -6,7 +6,7 @@ export const CreateMenuItemSchema = z.object({
   price: z
     .string()
     .regex(/^\d+(\.\d{1,2})?$/, { message: "Enter a valid price." }),
-  imageUrl: z.string().url().optional(),
+  imageUrl: z.string().url(),
 });
 
 export type CreateMenuItemType = z.infer<typeof CreateMenuItemSchema>;
