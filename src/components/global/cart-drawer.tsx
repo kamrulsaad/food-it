@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/context/cart-context";
+import Link from "next/link";
 
 export default function CartDrawer() {
   const { cart, removeItem, clearCart, addItem } = useCart();
@@ -129,7 +130,7 @@ export default function CartDrawer() {
               </div>
 
               <Button className="w-full mt-4 cursor-pointer">
-                Proceed to Checkout
+                <Link href="/checkout">Proceed to Checkout</Link>
               </Button>
               <Button
                 variant="ghost"
