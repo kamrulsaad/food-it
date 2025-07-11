@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -18,8 +19,8 @@ export default function HeroSection() {
 
   const handleLocateMe = async () => {
     try {
-      setLoadingLocation(true);
       navigator.geolocation.getCurrentPosition(async (position) => {
+        setLoadingLocation(true);
         const { latitude, longitude } = position.coords;
         const res = await fetch(
           `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${process.env.NEXT_PUBLIC_OPENCAGE_KEY}`
@@ -27,17 +28,21 @@ export default function HeroSection() {
         const data = await res.json();
         const components = data?.results?.[0]?.components;
         const detectedCity =
-          components?.city || components?.town || components?.village;
+          components?.city ||
+          components?.town ||
+          components?.village ||
+          components?.state?.split(" ")[0];
 
+        console.log(components, "Detected components");
         if (detectedCity) {
           setCity(detectedCity);
           router.push(`/r?city=${encodeURIComponent(detectedCity)}`);
         }
+        setLoadingLocation(false);
       });
     } catch (err) {
-      console.error("Location error:", err);
-    } finally {
       setLoadingLocation(false);
+      console.error("Location error:", err);
     }
   };
 
@@ -69,9 +74,8 @@ export default function HeroSection() {
               variant="outline"
               className="flex gap-2 items-center cursor-pointer"
               onClick={handleLocateMe}
-              disabled={loadingLocation}
             >
-              <span>📍</span> {loadingLocation ? "Locating..." : "Locate me"}
+             {loadingLocation ? <span className="flex gap-2 items-center">Locating <Loader2 /> </span> : "📍 Locate me"}
             </Button>
             <Button
               size="lg"
