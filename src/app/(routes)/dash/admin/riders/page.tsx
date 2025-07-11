@@ -42,7 +42,7 @@ export default async function RidersPage() {
                 </td>
                 <td className="p-3">{rider?.email || "N/A"}</td>
                 <td className="p-3">
-                  {rider.available ? (
+                  {rider.approved ? (
                     <span className="text-green-600 font-semibold">
                       Approved
                     </span>
