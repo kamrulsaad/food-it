@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,7 +26,6 @@ interface FullOrder extends Order {
 
 // Determine valid next status for restaurant side
 function getNextStatus(order: FullOrder): OrderStatus | null {
-  console.log("Current order status:", order.status);
   if (order.status === "PLACED") return "ACCEPTED_BY_RESTAURANT";
   if (order.status === "RIDER_ASSIGNED" && order.riderId)
     return "READY_FOR_PICKUP";
@@ -37,13 +36,34 @@ export default function OrderTable() {
   const [orders, setOrders] = useState<FullOrder[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  // Fetch all orders
+  const fetchOrders = async () => {
+    try {
+      const res = await fetch("/api/restaurant/order");
+      const data = await res.json();
+      setOrders(data);
+    } catch {
+      toast.error("Failed to load orders");
+    }
+  };
+
+  // Initial + polling logic (stable length)
   useEffect(() => {
-    fetch("/api/restaurant/order")
-      .then((res) => res.json())
-      .then(setOrders)
-      .catch(() => toast.error("Failed to load orders"));
+    fetchOrders();
+    const interval = setInterval(() => {
+      // We'll avoid fetching while an order is being updated
+      if (!loadingIdRef.current) {
+        fetchOrders();
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
+
+  // Track current loadingId in a ref (safe in intervals)
+  const loadingIdRef = useRef<string | null>(null);
+  useEffect(() => {
+    loadingIdRef.current = loadingId;
+  }, [loadingId]);
 
   // Update order status
   const handleUpdate = async (id: string, status: OrderStatus) => {
@@ -58,9 +78,7 @@ export default function OrderTable() {
       if (!res.ok) throw new Error("Failed to update");
 
       toast.success("Order updated");
-      setOrders((prev) =>
-        prev.map((o) => (o.id === id ? { ...o, status } : o))
-      );
+      await fetchOrders(); // Immediately refresh after update
     } catch (err) {
       console.error(err);
       toast.error("Error updating order");
@@ -70,7 +88,7 @@ export default function OrderTable() {
   };
 
   return (
-    <div className="overflow-x-auto rounded-lg border">
+    <div className="overflow-x-auto mt-2 rounded-lg border">
       <Table>
         <TableHeader>
           <TableRow>
