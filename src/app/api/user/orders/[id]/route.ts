@@ -2,19 +2,27 @@
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+interface OrderParams {
+  params: Promise<{
+    id: string;
+  }>;
+}
+
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: OrderParams["params"] }
 ) {
+  const { id } = await params;
+
   const order = await prisma.order.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       OrderItem: {
         include: {
-          menuItem: true, // Include menu item name
+          menuItem: true,
         },
       },
-      restaurant: true, // Include restaurant name/address
+      restaurant: true,
     },
   });
 

@@ -4,7 +4,7 @@ export default function LoadingRestaurantsPage() {
   return (
     <div>
       <Skeleton className="h-8 w-1/3" /> {/* fake page title */}
-      <div className="border rounded-lg overflow-x-auto">
+      <div className="border rounded-lg overflow-x-auto mt-2">
         <table className="w-full text-sm">
           <thead className="bg-muted">
             <tr>

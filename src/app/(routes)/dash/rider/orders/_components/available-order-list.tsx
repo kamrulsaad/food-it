@@ -35,21 +35,23 @@ export default function AvailableOrderList() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const res = await fetch("/api/rider/orders/available");
-        const data = await res.json();
-        setActiveOrder(data.activeOrder || null);
-        setAvailableOrders(data.availableOrders || []);
-      } catch (err) {
-        console.error("Failed to load orders", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchOrders = async () => {
+    try {
+      const res = await fetch("/api/rider/orders/available");
+      const data = await res.json();
+      setActiveOrder(data.activeOrder || null);
+      setAvailableOrders(data.availableOrders || []);
+    } catch (err) {
+      console.error("Failed to load orders", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchOrders();
+    const interval = setInterval(fetchOrders, 5000); // Poll every 5 seconds
+    return () => clearInterval(interval);
   }, []);
 
   const handleAssign = async (orderId: string) => {
@@ -62,10 +64,8 @@ export default function AvailableOrderList() {
 
       if (!res.ok) throw new Error("Failed to assign order");
 
-      const data = await res.json();
       toast.success("You have been assigned to this order");
-      setActiveOrder(data.order);
-      setAvailableOrders([]);
+      fetchOrders(); // Refresh state after assignment
     } catch (err) {
       console.error(err);
       toast.error("Assignment failed");
@@ -89,11 +89,7 @@ export default function AvailableOrderList() {
       if (!res.ok) throw new Error("Failed to update status");
 
       toast.success(`Order marked as ${nextStatus.replace(/_/g, " ")}`);
-      if (nextStatus === "DELIVERED") {
-        setActiveOrder(null);
-      } else { 
-        setActiveOrder({ ...activeOrder, status: nextStatus });
-      }
+      fetchOrders(); // Refetch latest state
     } catch (err) {
       console.error(err);
       toast.error("Failed to update status");
@@ -106,6 +102,8 @@ export default function AvailableOrderList() {
 
   if (activeOrder) {
     const nextStatus = nextRiderStatusMap[activeOrder.status];
+    const isCompleted = activeOrder.status === "DELIVERED";
+
     return (
       <Card className="shadow-md">
         <CardHeader>
@@ -124,7 +122,8 @@ export default function AvailableOrderList() {
           <p>
             <strong>Customer Address:</strong> {activeOrder.address}
           </p>
-          {nextStatus ? (
+
+          {!isCompleted && nextStatus ? (
             <Button onClick={handleProgress} disabled={updating}>
               {updating
                 ? "Updating..."

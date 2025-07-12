@@ -145,6 +145,7 @@ model Rider {
   address     String
   zipCode     String
   state       String
+  clerkId     String      @unique
   vehicleType VehicleType
   available   Boolean     @default(false)
   approved    Boolean     @default(false)

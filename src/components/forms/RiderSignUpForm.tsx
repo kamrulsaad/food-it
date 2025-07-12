@@ -64,7 +64,7 @@ export default function RiderSignupForm() {
     mode: "onSubmit",
     resolver: zodResolver(CreateRiderSchema),
     defaultValues: {
-      name: "",
+      name: user?.fullName || "",
       email: user?.primaryEmailAddress?.emailAddress || "",
       phone: "",
       address: "",
@@ -76,10 +76,11 @@ export default function RiderSignupForm() {
   });
 
   useEffect(() => {
-    if (user?.primaryEmailAddress?.emailAddress) {
+    if (user?.primaryEmailAddress?.emailAddress && user.fullName) {
       form.reset({
         ...form.getValues(),
         email: user.primaryEmailAddress.emailAddress,
+        name: user.fullName,
       });
     }
   }, [user, form]);
@@ -114,15 +115,21 @@ export default function RiderSignupForm() {
 
   const handleSubmit = async (values: CreateRiderType) => {
     try {
+      const payload = {
+        ...values,
+        email: user.primaryEmailAddress?.emailAddress,
+        clerkId: user.id,
+      };
+
       const res = await fetch("/api/rider", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) throw new Error("Failed to register rider");
       toast.success("Rider registered successfully!");
-      router.push("/"); // or dashboard
+      router.push("/dash/rider");
     } catch (err) {
       toast.error("Something went wrong.");
       console.error(err);
@@ -143,39 +150,24 @@ export default function RiderSignupForm() {
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Full Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormItem className="cursor-not-allowed">
+              <FormLabel>Full Name</FormLabel>
+              <FormControl>
+                <Input disabled value={user.fullName || ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
 
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem className="cursor-not-allowed">
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input
-                      disabled
-                      {...field}
-                      placeholder={
-                        user?.primaryEmailAddress?.emailAddress || ""
-                      }
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormItem className="cursor-not-allowed">
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input
+                  disabled
+                  value={user.primaryEmailAddress?.emailAddress || ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
 
             <FormField
               control={form.control}

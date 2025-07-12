@@ -111,8 +111,8 @@ const ownerNavSecondary = [
 
 const riderNavSecondary = [
   {
-    title: "Profile Settings",
-    url: "/dash/rider/settings",
+    title: "",
+    url: "#",
     icon: IconSettings,
   },
 ];

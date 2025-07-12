@@ -34,6 +34,7 @@ export async function POST(req: Request) {
   const rider = await prisma.rider.create({
     data: {
       ...data,
+      clerkId: userId,
     },
   });
 
