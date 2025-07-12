@@ -6,7 +6,6 @@ import {
   IconClipboardPlus,
   IconDashboard,
   IconListDetails,
-  IconSettings,
   IconUsers,
 } from "@tabler/icons-react";
 

@@ -11,9 +11,16 @@ export default function ThankYouPage() {
         Your order has been placed successfully. You will receive a confirmation
         shortly. We’ll notify you when your food is on the way.
       </p>
-      <Link href="/r">
-        <Button className="mt-4">Back to Home</Button>
-      </Link>
+      <div className="flex items-center justify-center space-x-4">
+        <Link href="/my-orders">
+          <Button className="cursor-pointer">Track Orders</Button>
+        </Link>
+        <Link href="/r">
+          <Button variant={"outline"} className="cursor-pointer">
+            Back to Home
+          </Button>
+        </Link>
+      </div>
     </div>
   );
 }

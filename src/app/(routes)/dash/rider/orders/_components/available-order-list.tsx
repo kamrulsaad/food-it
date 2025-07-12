@@ -102,7 +102,6 @@ export default function AvailableOrderList() {
 
   if (activeOrder) {
     const nextStatus = nextRiderStatusMap[activeOrder.status];
-    const isCompleted = activeOrder.status === "DELIVERED";
 
     return (
       <Card className="shadow-md">
@@ -123,15 +122,20 @@ export default function AvailableOrderList() {
             <strong>Customer Address:</strong> {activeOrder.address}
           </p>
 
-          {!isCompleted && nextStatus ? (
+          {nextStatus ? (
             <Button onClick={handleProgress} disabled={updating}>
               {updating
                 ? "Updating..."
                 : `Mark as ${nextStatus.replace(/_/g, " ")}`}
             </Button>
-          ) : (
+          ) : activeOrder.status === "DELIVERED" ||
+            activeOrder.status === "CANCELLED" ? (
             <p className="text-muted-foreground text-sm">
               This order is completed.
+            </p>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              Waiting for restaurant to update status...
             </p>
           )}
         </CardContent>

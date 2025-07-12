@@ -3,18 +3,19 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { OrderStatus, Order } from "../../../../../../prisma/generated/prisma";
+import { Order } from "../../../../../../prisma/generated/prisma";
 import { motion } from "framer-motion";
+import { CheckCircle, Circle, Clock } from "lucide-react";
 
-const statusSteps: OrderStatus[] = [
-  "PLACED",
-  "ACCEPTED_BY_RESTAURANT",
-  "RIDER_ASSIGNED",
-  "READY_FOR_PICKUP",
-  "PICKED_UP_BY_RIDER",
-  "ON_THE_WAY",
-  "DELIVERED",
-];
+const statusSteps = [
+  { status: "PLACED", timeKey: "placedAt" },
+  { status: "ACCEPTED_BY_RESTAURANT", timeKey: "acceptedAt" },
+  { status: "RIDER_ASSIGNED", timeKey: "riderAssignedAt" },
+  { status: "READY_FOR_PICKUP", timeKey: "readyAt" },
+  { status: "PICKED_UP_BY_RIDER", timeKey: "pickedUpAt" },
+  { status: "ON_THE_WAY", timeKey: "onTheWayAt" },
+  { status: "DELIVERED", timeKey: "deliveredAt" },
+] as const;
 
 type ExtendedOrder = Order & {
   OrderItem: {
@@ -55,7 +56,9 @@ export default function OrderTrackingPage() {
       </p>
     );
 
-  const currentStepIndex = statusSteps.indexOf(order.status);
+  const currentStepIndex = statusSteps.findIndex(
+    (step) => step.status === order.status
+  );
 
   return (
     <div className="mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -67,40 +70,60 @@ export default function OrderTrackingPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="relative">
-          <div className="absolute w-1 bg-gray-200 left-5 top-4 bottom-4 rounded" />
-          <ol className="relative space-y-8 pl-12">
-            {statusSteps.map((step, index) => {
-              const isCompleted = index < currentStepIndex;
+          {/* Timeline Line */}
+          {/* <div className="absolute left-8 top-5 bottom-5 w-0.5 bg-gray-200 rounded" /> */}
+
+          <ol className="relative space-y-2">
+            {statusSteps.map(({ status, timeKey }, index) => {
+              // or order status is delivered
+              const isCompleted =
+                index < currentStepIndex || order.status === "DELIVERED";
               const isActive = index === currentStepIndex;
+              const timestamp = order[timeKey as keyof ExtendedOrder] as
+                | string
+                | Date
+                | null;
+
+              const dotColor = isCompleted
+                ? "text-green-600"
+                : isActive
+                ? "text-yellow-500 animate-pulse"
+                : "text-gray-400";
+
+              const labelColor = isCompleted
+                ? "text-green-800 font-medium"
+                : isActive
+                ? "text-yellow-700 font-semibold"
+                : "text-gray-400";
+
+              const Icon = isCompleted
+                ? CheckCircle
+                : isActive
+                ? Clock
+                : Circle;
 
               return (
                 <motion.li
-                  key={step}
+                  key={status}
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="relative flex items-center gap-2"
+                  className="relative flex items-start justify-between"
                 >
-                  <div
-                    className={`absolute left-0 w-4 h-4 rounded-full ${
-                      isCompleted
-                        ? "bg-green-500"
-                        : isActive
-                        ? "bg-yellow-500"
-                        : "bg-gray-300"
-                    }`}
-                  ></div>
-                  <span
-                    className={`text-sm ml-6 ${
-                      isCompleted
-                        ? "text-green-700 font-medium"
-                        : isActive
-                        ? "text-yellow-800 font-semibold"
-                        : "text-gray-400"
-                    }`}
-                  >
-                    {step.replace(/_/g, " ")}
-                  </span>
+                  {/* Left: Dot + Label */}
+                  <div className="flex items-center gap-3">
+                    <Icon className={`w-5 h-5 ${dotColor}`} />
+                    <span className={`text-sm ${labelColor}`}>
+                      {status.replace(/_/g, " ")}
+                    </span>
+                  </div>
+
+                  {/* Right: Timestamp */}
+                  {timestamp && (
+                    <span className="text-xs text-muted-foreground">
+                      {new Date(timestamp).toLocaleString()}
+                    </span>
+                  )}
                 </motion.li>
               );
             })}
