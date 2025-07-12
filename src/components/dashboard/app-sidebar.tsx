@@ -22,24 +22,14 @@ interface AppSidebarProps extends React.ComponentProps<typeof Sidebar> {
 }
 
 export function AppSidebar({ role, ...props }: AppSidebarProps) {
-  const {
-    adminNavMain,
-    adminNavSecondary,
-    ownerNavMain,
-    ownerNavSecondary,
-    riderNavMain,
-    riderNavSecondary,
-  } = DashboardRoutes;
+  const { adminNavMain, ownerNavMain, riderNavMain } = DashboardRoutes;
 
   let navMain = adminNavMain;
-  let navSecondary = adminNavSecondary;
 
   if (role === "RESTATURANT_OWNER") {
     navMain = ownerNavMain;
-    navSecondary = ownerNavSecondary;
   } else if (role === "RIDER") {
     navMain = riderNavMain;
-    navSecondary = riderNavSecondary;
   }
 
   return (
@@ -62,7 +52,7 @@ export function AppSidebar({ role, ...props }: AppSidebarProps) {
 
       <SidebarContent>
         <NavMain items={navMain} />
-        <NavSecondary items={navSecondary} className="mt-auto" />
+        <NavSecondary className="mt-auto" />
       </SidebarContent>
 
       <SidebarFooter>

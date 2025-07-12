@@ -1,15 +1,30 @@
+import { redirect } from "next/navigation";
 import { currentUser } from "@clerk/nextjs/server";
+import prisma from "@/lib/prisma";
 
 export default async function DashboardPage() {
   const user = await currentUser();
-  return (
-    <div className="flex flex-1 flex-col">
-      <div className="@container/main flex flex-1 flex-col gap-2">
-        <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6 px-4 lg:px-6">
-          <h1 className="text-2xl font-bold">Welcome, {user?.fullName}!</h1>
-          <p className="text-muted-foreground">Manage your platform here.</p>
-        </div>
-      </div>
-    </div>
-  );
+  if (!user) redirect("/");
+
+  const dbUser = await prisma.user.findUnique({
+    where: { clerkId: user.id },
+    select: { role: true },
+  });
+
+  switch (dbUser?.role) {
+    case "ADMIN":
+      redirect("/dash/admin");
+    case "SUPERADMIN":
+      redirect("/dash/admin");
+    case "RESTATURANT_ADMIN":
+      redirect("/dash/admin/restaurants");
+    case "RESTATURANT_OWNER":
+      redirect("/dash/owner");
+    case "RIDER":
+      redirect("/dash/rider");
+    case "CUSTOMER":
+      redirect("/my-orders");
+    default:
+      redirect("/");
+  }
 }

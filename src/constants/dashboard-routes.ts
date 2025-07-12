@@ -93,37 +93,10 @@ const riderNavMain = [
   },
 ];
 
-const adminNavSecondary = [
-  {
-    title: "Settings",
-    url: "/dash/admin/settings",
-    icon: IconSettings,
-  },
-];
-
-const ownerNavSecondary = [
-  {
-    title: "Profile Settings",
-    url: "/dash/owner/settings",
-    icon: IconSettings,
-  },
-];
-
-const riderNavSecondary = [
-  {
-    title: "",
-    url: "#",
-    icon: IconSettings,
-  },
-];
-
 export const DashboardRoutes = {
   adminNavMain,
   ownerNavMain,
   riderNavMain,
-  adminNavSecondary,
-  ownerNavSecondary,
-  riderNavSecondary,
   adminRoute,
   ownerRoute,
   riderRoute,

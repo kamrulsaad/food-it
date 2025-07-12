@@ -1,8 +1,5 @@
 "use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { type Icon } from "@tabler/icons-react";
+import * as React from "react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -14,32 +11,12 @@ import { SignOutButton } from "@clerk/nextjs";
 import { LogOutIcon } from "lucide-react";
 
 export function NavSecondary({
-  items,
   ...props
-}: {
-  items: { title: string; url: string; icon: Icon }[];
-} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
-  const pathname = usePathname();
-
+}: {} & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <Link
-                  href={item.url}
-                  className={`flex items-center gap-2 cursor-pointer ${
-                    pathname === item.url ? "text-primary" : ""
-                  }`}
-                >
-                  <item.icon />
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
               <div className="flex items-center gap-2 cursor-pointer">
