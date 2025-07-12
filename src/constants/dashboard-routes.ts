@@ -12,6 +12,7 @@ import {
 
 const adminRoute = "/dash/admin";
 const ownerRoute = "/dash/owner";
+const riderRoute = "/dash/rider";
 
 const adminNavMain = [
   {
@@ -49,7 +50,6 @@ const adminNavMain = [
     url: adminRoute + "/cities",
     icon: IconBuildingArch,
   },
-  
 ];
 
 const ownerNavMain = [
@@ -75,6 +75,24 @@ const ownerNavMain = [
   },
 ];
 
+const riderNavMain = [
+  {
+    title: "Dashboard",
+    url: riderRoute,
+    icon: IconDashboard,
+  },
+  {
+    title: "Orders",
+    url: riderRoute + "/orders",
+    icon: IconListDetails,
+  },
+  {
+    title: "Profile",
+    url: riderRoute + "/profile",
+    icon: IconUsers,
+  },
+];
+
 const adminNavSecondary = [
   {
     title: "Settings",
@@ -91,11 +109,22 @@ const ownerNavSecondary = [
   },
 ];
 
+const riderNavSecondary = [
+  {
+    title: "Profile Settings",
+    url: "/dash/rider/settings",
+    icon: IconSettings,
+  },
+];
+
 export const DashboardRoutes = {
   adminNavMain,
   ownerNavMain,
+  riderNavMain,
   adminNavSecondary,
   ownerNavSecondary,
+  riderNavSecondary,
   adminRoute,
   ownerRoute,
+  riderRoute,
 };
