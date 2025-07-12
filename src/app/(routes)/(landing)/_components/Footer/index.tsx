@@ -6,10 +6,10 @@ import { Facebook, Instagram } from "lucide-react";
 const footerLinks = [
   [
     { label: "Create Restaurant", href: "/r/create" },
-    { label: "Help Center", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Become an Affiliate", href: "#" },
-    { label: "Areas delivered in Dhaka", href: "#" },
+    { label: "Rider Sign Up", href: "/rider/sign-up" },
+    { label: "Restaurant Dashboard", href: "/dash/owner" },
+    { label: "Admin Dashboard", href: "/dash/admin" },
+    { label: "Rider Dasboard", href: "/dash/rider" },
     { label: "Areas delivered in Gazipur", href: "#" },
     { label: "Areas delivered in Sylhet", href: "#" },
   ],
