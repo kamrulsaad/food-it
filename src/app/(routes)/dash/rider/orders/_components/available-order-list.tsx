@@ -8,6 +8,7 @@ import {
   Order,
   Restaurant,
   User,
+  OrderStatus,
 } from "../../../../../../../prisma/generated/prisma";
 
 interface OrderWithDetails extends Order {
@@ -15,24 +16,32 @@ interface OrderWithDetails extends Order {
   user: User;
 }
 
+const nextRiderStatusMap: Record<OrderStatus, OrderStatus | null> = {
+  READY_FOR_PICKUP: "PICKED_UP_BY_RIDER",
+  PICKED_UP_BY_RIDER: "ON_THE_WAY",
+  ON_THE_WAY: "DELIVERED",
+  DELIVERED: null,
+  PLACED: null,
+  ACCEPTED_BY_RESTAURANT: null,
+  RIDER_ASSIGNED: null,
+  CANCELLED: null,
+};
+
 export default function AvailableOrderList() {
   const [activeOrder, setActiveOrder] = useState<OrderWithDetails | null>(null);
   const [availableOrders, setAvailableOrders] = useState<OrderWithDetails[]>(
     []
   );
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState(false);
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
         const res = await fetch("/api/rider/orders/available");
         const data = await res.json();
-
-        if (data.activeOrder) {
-          setActiveOrder(data.activeOrder);
-        } else {
-          setAvailableOrders(data.availableOrders);
-        }
+        setActiveOrder(data.activeOrder || null);
+        setAvailableOrders(data.availableOrders || []);
       } catch (err) {
         console.error("Failed to load orders", err);
       } finally {
@@ -63,17 +72,48 @@ export default function AvailableOrderList() {
     }
   };
 
+  const handleProgress = async () => {
+    if (!activeOrder) return;
+
+    const nextStatus = nextRiderStatusMap[activeOrder.status];
+    if (!nextStatus) return;
+
+    setUpdating(true);
+    try {
+      const res = await fetch("/api/order/status", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId: activeOrder.id, status: nextStatus }),
+      });
+
+      if (!res.ok) throw new Error("Failed to update status");
+
+      toast.success(`Order marked as ${nextStatus.replace(/_/g, " ")}`);
+      if (nextStatus === "DELIVERED") {
+        setActiveOrder(null);
+      } else { 
+        setActiveOrder({ ...activeOrder, status: nextStatus });
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update status");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
   if (loading) return <p>Loading orders...</p>;
 
   if (activeOrder) {
+    const nextStatus = nextRiderStatusMap[activeOrder.status];
     return (
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle>Order #{activeOrder.id.slice(0, 6)}</CardTitle>
+          <CardTitle>Active Order #{activeOrder.id.slice(0, 6)}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <p>
-            <strong>Status:</strong> {activeOrder.status}
+            <strong>Status:</strong> {activeOrder.status.replace(/_/g, " ")}
           </p>
           <p>
             <strong>Restaurant:</strong> {activeOrder.restaurant.name}
@@ -84,13 +124,25 @@ export default function AvailableOrderList() {
           <p>
             <strong>Customer Address:</strong> {activeOrder.address}
           </p>
+          {nextStatus ? (
+            <Button onClick={handleProgress} disabled={updating}>
+              {updating
+                ? "Updating..."
+                : `Mark as ${nextStatus.replace(/_/g, " ")}`}
+            </Button>
+          ) : (
+            <p className="text-muted-foreground text-sm">
+              This order is completed.
+            </p>
+          )}
         </CardContent>
       </Card>
     );
   }
 
-  if (!availableOrders?.length)
+  if (!availableOrders.length) {
     return <p>No available orders in your city right now.</p>;
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

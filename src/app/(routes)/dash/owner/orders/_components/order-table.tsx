@@ -1,4 +1,3 @@
-// /app/dash/owner/orders/_components/order-table.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -19,26 +18,26 @@ import {
   OrderStatus,
 } from "../../../../../../../prisma/generated/prisma";
 
+// Full order type
 interface FullOrder extends Order {
   user: { email: string };
   OrderItem: { quantity: number; menuItem: { name: string } }[];
 }
 
-const nextStatusMap: Record<OrderStatus, OrderStatus | null> = {
-  PLACED: "ACCEPTED_BY_RESTAURANT",
-  ACCEPTED_BY_RESTAURANT: "READY_FOR_PICKUP",
-  READY_FOR_PICKUP: null, // After this, Rider is involved
-  RIDER_ASSIGNED: null,
-  PICKED_UP_BY_RIDER: null,
-  ON_THE_WAY: null,
-  DELIVERED: null,
-  CANCELLED: null,
-};
+// Determine valid next status for restaurant side
+function getNextStatus(order: FullOrder): OrderStatus | null {
+  console.log("Current order status:", order.status);
+  if (order.status === "PLACED") return "ACCEPTED_BY_RESTAURANT";
+  if (order.status === "RIDER_ASSIGNED" && order.riderId)
+    return "READY_FOR_PICKUP";
+  return null;
+}
 
 export default function OrderTable() {
   const [orders, setOrders] = useState<FullOrder[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
+  // Fetch all orders
   useEffect(() => {
     fetch("/api/restaurant/order")
       .then((res) => res.json())
@@ -46,6 +45,7 @@ export default function OrderTable() {
       .catch(() => toast.error("Failed to load orders"));
   }, []);
 
+  // Update order status
   const handleUpdate = async (id: string, status: OrderStatus) => {
     setLoadingId(id);
     try {
@@ -84,7 +84,8 @@ export default function OrderTable() {
         </TableHeader>
         <TableBody>
           {orders.map((order, index) => {
-            const nextStatus = nextStatusMap[order.status];
+            const nextStatus = getNextStatus(order);
+
             return (
               <TableRow key={order.id}>
                 <TableCell>{index + 1}</TableCell>
