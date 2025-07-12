@@ -122,26 +122,6 @@ model MenuItem {
   @@map("menu_items")
 }
 
-model Order {
-  id           String      @id @default(uuid())
-  userId       String
-  restaurantId String
-  status       OrderStatus @default(PENDING)
-  totalAmount  Int
-  deliveryFee  Int         @default(0)
-  address      String?
-
-  user       User       @relation(fields: [userId], references: [clerkId])
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
-
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  OrderItem OrderItem[]
-  Rider     Rider[]
-
-  @@map("orders")
-}
-
 model OrderItem {
   id         String @id @default(uuid())
   orderId    String
@@ -180,9 +160,45 @@ model Rider {
   @@map("riders")
 }
 
+model Order {
+  id           String      @id @default(uuid())
+  userId       String
+  restaurantId String
+  riderId      String? // nullable until assigned
+  status       OrderStatus
+  totalAmount  Int
+  deliveryFee  Int         @default(0)
+  address      String?
+
+  // Status timestamps
+  placedAt        DateTime  @default(now())
+  acceptedAt      DateTime? // restaurant accepted
+  riderAssignedAt DateTime?
+  readyAt         DateTime?
+  pickedUpAt      DateTime?
+  onTheWayAt      DateTime?
+  deliveredAt     DateTime?
+  cancelledAt     DateTime?
+
+  user       User       @relation(fields: [userId], references: [clerkId])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  rider      Rider?     @relation(fields: [riderId], references: [id])
+
+  OrderItem OrderItem[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@map("orders")
+}
+
 enum OrderStatus {
-  PENDING
-  COMPLETED
+  PLACED
+  ACCEPTED_BY_RESTAURANT
+  RIDER_ASSIGNED
+  READY_FOR_PICKUP
+  PICKED_UP_BY_RIDER
+  ON_THE_WAY
+  DELIVERED
   CANCELLED
 }
 
