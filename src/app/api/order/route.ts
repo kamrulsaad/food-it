@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { authMiddleware } from "@/lib/auth";
-
+import { OrderStatus } from "../../../../prisma/generated/prisma";
 
 type CartItem = {
   itemId: string;
@@ -24,25 +24,41 @@ export async function POST(req: Request) {
       totalAmount,
       deliveryFee,
       address,
+      name,
+      phone,
     }: {
       restaurantId: string;
       items: CartItem[];
       totalAmount: number;
       deliveryFee: number;
       address: string;
+      name?: string;
+      phone?: string;
     } = await req.json();
 
-    // Basic validation
-    if (!restaurantId || !items?.length || !totalAmount || !address) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+    // Validate request body
+    if (
+      !restaurantId ||
+      !items?.length ||
+      !totalAmount ||
+      typeof deliveryFee !== "number" ||
+      !address
+    ) {
+      return NextResponse.json(
+        { error: "Missing or invalid fields" },
+        { status: 400 }
+      );
     }
 
-    // Create order with nested OrderItems
+    // Create order
     const order = await prisma.order.create({
       data: {
         userId: user.clerkId,
+        name: name || "",
+        phone: phone || "",
         restaurantId,
-        status: "PENDING",
+        status: OrderStatus.PLACED,
+        placedAt: new Date(), // Set the order status to PLACED
         totalAmount,
         deliveryFee,
         address,
@@ -55,7 +71,11 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ success: true, orderId: order.id });
+    return NextResponse.json({
+      success: true,
+      message: "Order placed successfully",
+      orderId: order.id,
+    });
   } catch (error) {
     console.error("Order creation error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
