@@ -1,3 +1,4 @@
+// src/app/(routes)/(landing)/preorder/page.tsx
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";

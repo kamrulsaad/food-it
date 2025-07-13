@@ -1,67 +1,73 @@
-import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
-import { addDays, setHours, setMinutes, setSeconds } from "date-fns";
+import { NextResponse } from "next/server";
 
-const MEAL_TIME_MAP = {
-  BREAKFAST: { hour: 8, minute: 0 },
-  LUNCH: { hour: 13, minute: 0 },
-  DINNER: { hour: 21, minute: 0 },
+const defaultMealTimes = {
+  BREAKFAST: 8,
+  LUNCH: 13,
+  DINNER: 21,
 };
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId)
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-  const body = await req.json();
-  const { recurring, days, startDate, selectedItems } = body;
-
-  if (!Array.isArray(selectedItems) || days < 1 || days > 7) {
-    return NextResponse.json({ error: "Invalid input" }, { status: 400 });
-  }
-
   try {
-    const preOrder = await prisma.preOrder.create({
-      data: {
-        userId,
-        recurring,
-        days,
-        discountAmount: 10, // example static discount
-        schedule: {
-          create: selectedItems.flatMap((entry) => {
-            const { restaurantId, mealSlot, items } = entry;
+    const { userId } = await auth();
+    if (!userId)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-            const time = MEAL_TIME_MAP[mealSlot as keyof typeof MEAL_TIME_MAP];
-            const schedules = [];
+    const body = await req.json();
+    const { startDate, days, selectedItems } = body;
 
-            for (let i = 0; i < days; i++) {
-              const day = addDays(new Date(startDate), i);
-              const scheduledFor = setSeconds(
-                setMinutes(setHours(day, time.hour), time.minute),
-                0
-              );
+    if (!startDate || !days || !selectedItems?.length)
+      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
-              schedules.push({
-                restaurantId,
-                mealSlot,
-                scheduledFor,
-                menuItems: items,
-              });
-            }
+    const baseDate = new Date(startDate);
+    const preOrdersToCreate = [];
 
-            return schedules;
-          }),
-        },
-      },
-    });
+    for (let d = 0; d < days; d++) {
+      const dayDate = new Date(baseDate);
+      dayDate.setDate(baseDate.getDate() + d);
 
-    return NextResponse.json({
-      message: "Pre-order placed",
-      preOrderId: preOrder.id,
-    });
-  } catch (err) {
-    console.error("Pre-order error:", err);
+      for (const item of selectedItems) {
+        const hour =
+          defaultMealTimes[item.mealSlot as keyof typeof defaultMealTimes];
+        const scheduledDate = new Date(dayDate);
+        scheduledDate.setHours(hour, 0, 0, 0);
+
+        preOrdersToCreate.push({
+          userId,
+          restaurantId: item.restaurantId,
+          mealSlot: item.mealSlot,
+          scheduledDate,
+          items: {
+            create: [
+              {
+                menuItemId: item.itemId,
+                quantity: item.quantity,
+              },
+            ],
+          },
+        });
+      }
+    }
+
+    // Save all preorders
+    await prisma.$transaction(
+      preOrdersToCreate.map((preorder) =>
+        prisma.preOrder.create({
+          data: {
+            userId: preorder.userId,
+            restaurantId: preorder.restaurantId,
+            mealSlot: preorder.mealSlot,
+            scheduledDate: preorder.scheduledDate,
+            PreOrderItem: preorder.items,
+          },
+        })
+      )
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Pre-order error:", error);
     return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }

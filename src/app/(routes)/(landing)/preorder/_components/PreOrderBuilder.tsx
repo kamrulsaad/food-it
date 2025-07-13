@@ -1,10 +1,10 @@
+// src/app/(routes)/(landing)/preorder/_components/PreOrderBuilder.tsx
 "use client";
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -37,8 +37,8 @@ export default function PreOrderBuilder({
 }) {
   const [mealSelections, setMealSelections] = useState<MealSelections>({});
   const [days, setDays] = useState(1);
-  const [recurring, setRecurring] = useState(false);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const filteredRestaurants = availableRestaurants.filter(
@@ -103,12 +103,14 @@ export default function PreOrderBuilder({
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     const selectedItems = Object.entries(mealSelections).flatMap(
       ([mealSlot, items]) => {
         return items!.map((item) => ({
           restaurantId: item.restaurantId,
           mealSlot,
-          items: [{ itemId: item.itemId, quantity: item.quantity }],
+          itemId: item.itemId,
+          quantity: item.quantity,
         }));
       }
     );
@@ -123,17 +125,18 @@ export default function PreOrderBuilder({
       body: JSON.stringify({
         startDate: new Date().toISOString(),
         days,
-        recurring,
         selectedItems,
       }),
     });
 
     const data = await res.json();
     if (res.ok) {
-      toast.success("Pre-order submitted!");
+      setLoading(false);
+      toast.success("Pre-order(s) submitted!");
       setMealSelections({});
-      router.push(`/preorder/checkout/${data.preOrderId}`);
+      router.push("/my-orders/preorder"); // Refresh to clear state or show pre-order list later
     } else {
+      setLoading(false);
       toast.error(data.error || "Failed to submit pre-order.");
     }
   };
@@ -151,15 +154,6 @@ export default function PreOrderBuilder({
             value={days}
             onChange={(e) => setDays(parseInt(e.target.value))}
           />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Checkbox
-            id="recurring"
-            checked={recurring}
-            onCheckedChange={(val) => setRecurring(!!val)}
-          />
-          <Label htmlFor="recurring">Make this a recurring order</Label>
         </div>
 
         {(["BREAKFAST", "LUNCH", "DINNER"] as MealSlot[]).map((slot) => (
@@ -211,8 +205,12 @@ export default function PreOrderBuilder({
           </div>
         ))}
 
-        <Button className="w-full mt-4 cursor-pointer" onClick={handleSubmit}>
-          Submit Pre-order
+        <Button
+          disabled={loading}
+          className="w-full mt-4 cursor-pointer"
+          onClick={handleSubmit}
+        >
+          {loading ? "Submitting..." : "Submit Pre-Order"}
         </Button>
       </div>
 

@@ -26,6 +26,7 @@ model User {
 
   Restaurant Restaurant[]
   Order      Order[]
+  PreOrder   PreOrder[]
 
   @@map("users")
 }
@@ -98,6 +99,7 @@ model Restaurant {
 
   menuItems MenuItem[]
   Order     Order[]
+  PreOrder  PreOrder[]
 
   @@map("restaurants")
 }
@@ -116,9 +118,10 @@ model MenuItem {
 
   variants Variant[]
 
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  OrderItem OrderItem[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  OrderItem    OrderItem[]
+  PreOrderItem PreOrderItem[]
 
   @@map("menu_items")
 }
@@ -184,6 +187,9 @@ model Order {
   deliveredAt     DateTime?
   cancelledAt     DateTime?
 
+  scheduledAt DateTime?
+  isScheduled Boolean   @default(false)
+
   user       User       @relation(fields: [userId], references: [clerkId])
   restaurant Restaurant @relation(fields: [restaurantId], references: [id])
   rider      Rider?     @relation(fields: [riderId], references: [id])
@@ -216,27 +222,38 @@ model Message {
 }
 
 model PreOrder {
-  id             String             @id @default(cuid())
-  userId         String
-  status         PreOrderStatus     @default(PENDING)
-  recurring      Boolean            @default(false)
-  days           Int // 1 to 7
-  address        String? // ✅ Add this line
-  totalAmount    Int?
-  createdAt      DateTime           @default(now())
-  discountAmount Float?
-  schedule       PreOrderSchedule[] // One-to-many
+  id            String         @id @default(uuid())
+  userId        String
+  status        PreOrderStatus @default(PENDING)
+  address       String?
+  scheduledDate DateTime // Date + Time to trigger cron order creation
+
+  mealSlot     MealSlot // Enum: BREAKFAST, LUNCH, DINNER
+  restaurantId String
+
+  user         User           @relation(fields: [userId], references: [clerkId])
+  restaurant   Restaurant     @relation(fields: [restaurantId], references: [id])
+  PreOrderItem PreOrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("preorders")
 }
 
-model PreOrderSchedule {
-  id           String   @id @default(cuid())
-  preOrderId   String
-  preOrder     PreOrder @relation(fields: [preOrderId], references: [id])
-  restaurantId String
-  scheduledFor DateTime
-  mealSlot     MealSlot
-  isDelivered  Boolean  @default(false)
-  menuItems    Json // [{ itemId: string, quantity: number }]
+model PreOrderItem {
+  id         String @id @default(uuid())
+  preOrderId String
+  menuItemId String
+  quantity   Int
+
+  preOrder PreOrder @relation(fields: [preOrderId], references: [id])
+  menuItem MenuItem @relation(fields: [menuItemId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("preorder_items")
 }
 
 enum MealSlot {
