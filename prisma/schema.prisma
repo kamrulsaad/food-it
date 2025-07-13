@@ -195,6 +195,23 @@ model Order {
   @@map("orders")
 }
 
+model Chat {
+  id        String   @id @default(cuid())
+  orderId   String   @unique
+  messages  Message[]
+  createdAt DateTime @default(now())
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  chatId    String
+  chat      Chat     @relation(fields: [chatId], references: [id])
+  content   String
+  senderId  String
+  senderRole String  // "CUSTOMER" | "OWNER" | "RIDER"
+  createdAt DateTime @default(now())
+}
+
 enum OrderStatus {
   PLACED
   ACCEPTED_BY_RESTAURANT

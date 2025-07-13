@@ -10,6 +10,7 @@ import {
   User,
   OrderStatus,
 } from "../../../../../../../prisma/generated/prisma";
+import Link from "next/link";
 
 interface OrderWithDetails extends Order {
   restaurant: Restaurant;
@@ -106,7 +107,11 @@ export default function AvailableOrderList() {
     return (
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle>Active Order #{activeOrder.id.slice(0, 6)}</CardTitle>
+          <CardTitle className="text-xl hover:underline hover:text-blue-600 cursor-pointer">
+            <Link href={`/dash/rider/orders/${activeOrder.id}`}>
+              Active Order #{activeOrder.id.slice(0, 6)}
+            </Link>
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
           <p>

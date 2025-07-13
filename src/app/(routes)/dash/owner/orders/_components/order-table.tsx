@@ -17,6 +17,7 @@ import {
   Order,
   OrderStatus,
 } from "../../../../../../../prisma/generated/prisma";
+import Link from "next/link";
 
 // Full order type
 interface FullOrder extends Order {
@@ -107,14 +108,16 @@ export default function OrderTable() {
             return (
               <TableRow key={order.id}>
                 <TableCell>{index + 1}</TableCell>
-                <TableCell>
-                  <ul className="text-sm">
-                    {order.OrderItem.map((item, i) => (
-                      <li key={i}>
-                        {item.menuItem.name} × {item.quantity}
-                      </li>
-                    ))}
-                  </ul>
+                <TableCell className="hover:underline hover:text-blue-600 cursor-pointer">
+                  <Link href={`/dash/owner/orders/${order.id}`}>
+                    <ul className="text-sm">
+                      {order.OrderItem.map((item, i) => (
+                        <li key={i}>
+                          {item.menuItem.name} × {item.quantity}
+                        </li>
+                      ))}
+                    </ul>
+                  </Link>
                 </TableCell>
                 <TableCell>{order.user.email}</TableCell>
                 <TableCell>
