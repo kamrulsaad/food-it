@@ -3,17 +3,18 @@ import { auth } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 import ConfirmCheckoutClient from "../../_components/ConfirmCheckoutClient";
 
-export default async function PreOrderCheckout({
-  params,
-}: {
-  params: { id: string };
-}) {
+interface PreOrderPageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function PreOrderCheckout({ params }: PreOrderPageProps) {
+  const { id } = await params;
   const { userId } = await auth();
   if (!userId) return notFound();
 
   const preOrder = await prisma.preOrder.findUnique({
     where: {
-      id: params.id,
+      id,
       userId,
     },
     include: {
@@ -116,7 +117,7 @@ export default async function PreOrderCheckout({
       <ConfirmCheckoutClient
         grandTotal={grandTotal}
         discount={preOrder.discountAmount || 0}
-        preOrderId={params.id}
+        preOrderId={id}
       />
     </div>
   );
