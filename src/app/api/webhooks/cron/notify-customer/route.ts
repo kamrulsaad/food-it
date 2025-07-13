@@ -38,6 +38,7 @@ export async function GET(req: Request) {
       },
     },
   });
+//   console.log("✉️ Running pre-order reminder cron job...");
 
   for (const preOrder of upcomingPreOrders) {
     if (!preOrder.user?.email) continue;
