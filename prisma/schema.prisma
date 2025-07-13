@@ -215,6 +215,42 @@ model Message {
   createdAt  DateTime @default(now())
 }
 
+model PreOrder {
+  id             String             @id @default(cuid())
+  userId         String
+  status         PreOrderStatus     @default(PENDING)
+  recurring      Boolean            @default(false)
+  days           Int // 1 to 7
+  address        String? // ✅ Add this line
+  totalAmount    Int?
+  createdAt      DateTime           @default(now())
+  discountAmount Float?
+  schedule       PreOrderSchedule[] // One-to-many
+}
+
+model PreOrderSchedule {
+  id           String   @id @default(cuid())
+  preOrderId   String
+  preOrder     PreOrder @relation(fields: [preOrderId], references: [id])
+  restaurantId String
+  scheduledFor DateTime
+  mealSlot     MealSlot
+  isDelivered  Boolean  @default(false)
+  menuItems    Json // [{ itemId: string, quantity: number }]
+}
+
+enum MealSlot {
+  BREAKFAST
+  LUNCH
+  DINNER
+}
+
+enum PreOrderStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
 enum OrderStatus {
   PLACED
   ACCEPTED_BY_RESTAURANT
