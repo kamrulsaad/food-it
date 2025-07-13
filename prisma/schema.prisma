@@ -247,7 +247,7 @@ model PreOrderItem {
   menuItemId String
   quantity   Int
 
-  preOrder PreOrder @relation(fields: [preOrderId], references: [id])
+  preOrder PreOrder @relation(fields: [preOrderId], references: [id], onDelete: Cascade)
   menuItem MenuItem @relation(fields: [menuItemId], references: [id])
 
   createdAt DateTime @default(now())

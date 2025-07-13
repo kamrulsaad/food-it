@@ -39,6 +39,8 @@ export default function PreOrderBuilder({
   const [days, setDays] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [address, setAddress] = useState("");
+
   const router = useRouter();
 
   const filteredRestaurants = availableRestaurants.filter(
@@ -120,12 +122,19 @@ export default function PreOrderBuilder({
       return;
     }
 
+    if (!address) {
+      toast.error("Please enter a delivery address.");
+      setLoading(false);
+      return;
+    }
+
     const res = await fetch("/api/preorder", {
       method: "POST",
       body: JSON.stringify({
         startDate: new Date().toISOString(),
         days,
         selectedItems,
+        address,
       }),
     });
 
@@ -204,6 +213,16 @@ export default function PreOrderBuilder({
             })}
           </div>
         ))}
+
+        <div className="space-y-2">
+          <Label htmlFor="address">Delivery Address</Label>
+          <Input
+            id="address"
+            placeholder="Enter your delivery address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+          />
+        </div>
 
         <Button
           disabled={loading}

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const body = await req.json();
-    const { startDate, days, selectedItems } = body;
+    const { startDate, days, selectedItems, address } = body;
 
     if (!startDate || !days || !selectedItems?.length)
       return NextResponse.json({ error: "Missing fields" }, { status: 400 });
@@ -56,6 +56,7 @@ export async function POST(req: Request) {
         prisma.preOrder.create({
           data: {
             userId: preorder.userId,
+            address: address, // Ensure address is set
             restaurantId: preorder.restaurantId,
             mealSlot: preorder.mealSlot,
             scheduledDate: preorder.scheduledDate,
