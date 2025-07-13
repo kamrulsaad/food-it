@@ -24,6 +24,7 @@ interface PreOrder {
 export default function MyPreOrdersPage() {
   const [data, setData] = useState<PreOrder[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deletingID, setDeletingID] = useState<string>("");
 
   const fetchData = () => {
     fetch("/api/customer/preorders")
@@ -39,6 +40,7 @@ export default function MyPreOrdersPage() {
   }, []);
 
   const cancelPreOrder = async (id: string) => {
+    setDeletingID(id);
     const res = await fetch(`/api/customer/preorders/${id}`, {
       method: "DELETE",
     });
@@ -46,8 +48,10 @@ export default function MyPreOrdersPage() {
     if (res.ok) {
       toast.success("Pre-order cancelled.");
       fetchData();
+      setDeletingID("");
     } else {
       toast.error("Failed to cancel.");
+      setDeletingID("");
     }
   };
 
@@ -61,7 +65,7 @@ export default function MyPreOrdersPage() {
     <div className="mx-auto">
       <h2 className="text-2xl font-bold mb-6">My Pre-Orders</h2>
 
-      <div className="space-y-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {data.map((preOrder) => (
           <div
             key={preOrder.id}
@@ -95,15 +99,19 @@ export default function MyPreOrdersPage() {
               ))}
             </div>
 
-            {preOrder.status === "PENDING" && (
-              <Button
-                className="cursor-pointer"
-                variant="destructive"
-                onClick={() => cancelPreOrder(preOrder.id)}
-              >
-                Cancel Pre-order
-              </Button>
-            )}
+            <Button
+              className="cursor-pointer"
+              variant="destructive"
+              disabled={deletingID === preOrder.id}
+              onClick={() => cancelPreOrder(preOrder.id)}
+            >
+              {deletingID === preOrder.id
+                ? "Cancelling..."
+                : preOrder.status === "CONFIRMED"
+                ? "Delete"
+                : "Cancel Pre-Order"}
+              {}
+            </Button>
           </div>
         ))}
       </div>
