@@ -12,7 +12,8 @@ import CartDrawer from "@/components/global/cart-drawer";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/deals", label: "Deals" },
+  { href: "/my-orders", label: "My Orders" },
+  { href: '/preorder', label: "Pre-Order" },
 ];
 
 export default async function MobileNavbar() {

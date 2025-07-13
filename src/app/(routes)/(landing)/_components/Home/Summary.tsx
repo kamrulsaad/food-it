@@ -3,7 +3,8 @@ export default function PlatformSummary() {
     <section className="px-4 sm:px-10 md:px-20 xl:px-40 py-12 bg-white">
       <div className=" mx-auto">
         <h2 className="text-xl md:text-2xl font-semibold text-gray-900 mb-4">
-          Order food from the best restaurants and shops with Food IT Bangladesh
+          Order food from the best Restaurants and HomeMade Places with Food IT
+          Bangladesh
         </h2>
         <p className="text-sm md:text-base text-gray-700 leading-relaxed">
           Are you hungry? Did you have a long and stressful day? Interested in

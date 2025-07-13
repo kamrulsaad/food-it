@@ -72,6 +72,11 @@ const ownerNavMain = [
     url: ownerRoute + "/orders",
     icon: IconListDetails,
   },
+  {
+    title: "Pre-Orders",
+    url: ownerRoute + "/preorders",
+    icon: IconListDetails,
+  },
 ];
 
 const riderNavMain = [
