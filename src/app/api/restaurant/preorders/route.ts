@@ -1,61 +1,77 @@
-// /api/restaurant/preorders/route.ts
 import { auth } from "@clerk/nextjs/server";
-import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
 
 export async function GET() {
   const { userId } = await auth();
-  if (!userId)
+
+  if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
-  const restaurant = await prisma.restaurant.findUnique({
-    where: { ownerId: userId },
-  });
-  if (!restaurant)
-    return NextResponse.json(
-      { error: "Restaurant not found" },
-      { status: 404 }
-    );
-
-  const schedules = await prisma.preOrderSchedule.findMany({
+  // Find the restaurant(s) owned by this user
+  const restaurants = await prisma.restaurant.findMany({
     where: {
-      restaurantId: restaurant.id,
-      preOrder: { status: "CONFIRMED" },
-      isDelivered: false,
+      ownerId: userId,
     },
-    include: { preOrder: true },
-    orderBy: { scheduledFor: "asc" },
+    select: {
+      id: true,
+    },
   });
 
-  // Fetch user info
-  const userIds = schedules.map((s) => s.preOrder.userId);
-  const users = await prisma.user.findMany({
-    where: { clerkId: { in: userIds } },
-    select: { clerkId: true, address: true, email: true },
-  });
-  const userMap = new Map(users.map((u) => [u.clerkId, u]));
+  const restaurantIds = restaurants.map((r) => r.id);
 
-  // Collect all itemIds
-  const allItemIds = schedules.flatMap((s) =>
-    (s.menuItems as { itemId: string }[]).map((i) => i.itemId)
-  );
-  const items = await prisma.menuItem.findMany({
-    where: { id: { in: allItemIds } },
-    select: { id: true, name: true, price: true },
-  });
-  const itemMap = new Map(items.map((i) => [i.id, i]));
+  if (restaurantIds.length === 0) {
+    return NextResponse.json([], { status: 200 });
+  }
 
-  const result = schedules.map((s) => ({
-    ...s,
-    user: userMap.get(s.preOrder.userId) || null,
-    enrichedItems: (s.menuItems as { itemId: string; quantity: number }[]).map(
-      (entry) => ({
-        ...entry,
-        name: itemMap.get(entry.itemId)?.name || "Item",
-        price: itemMap.get(entry.itemId)?.price || 0,
-        isDelivered: s.isDelivered,
-      })
-    ),
+  // Fetch upcoming preorders
+  const preorders = await prisma.preOrder.findMany({
+    where: {
+      restaurantId: { in: restaurantIds },
+      scheduledDate: {
+        gte: new Date(),
+      },
+      status: {
+        in: ["PENDING", "CONFIRMED"],
+      },
+    },
+    include: {
+      user: {
+        select: {
+          email: true,
+        },
+      },
+      PreOrderItem: {
+        include: {
+          menuItem: {
+            select: {
+              name: true,
+              price: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      scheduledDate: "asc",
+    },
+  });
+
+  const result = preorders.map((p) => ({
+    id: p.id,
+    scheduledDate: p.scheduledDate,
+    mealSlot: p.mealSlot,
+    status: p.status,
+    customer: {
+      email: p.user?.email || null,
+      address: p.address || null,
+    },
+    items: p.PreOrderItem.map((item) => ({
+      name: item.menuItem.name,
+      price: item.menuItem.price,
+      quantity: item.quantity,
+    })),
   }));
 
   return NextResponse.json(result);
