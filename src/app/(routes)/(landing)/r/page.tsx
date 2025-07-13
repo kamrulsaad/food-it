@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Filter } from "lucide-react";
 import RestaurantGrid from "./_components/RestaurantGrid";
 import SidebarFilters from "./_components/SidebarFilters";
+import { Suspense } from "react";
 
 export default function ExplorePage() {
   return (
@@ -42,7 +43,9 @@ export default function ExplorePage() {
       </div>
 
       {/* Main Grid */}
-      <RestaurantGrid />
+      <Suspense fallback={<div className="py-10 text-center">Loading...</div>}>
+        <RestaurantGrid />
+      </Suspense>
     </div>
   );
 }
