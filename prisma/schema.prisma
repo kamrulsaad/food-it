@@ -196,20 +196,23 @@ model Order {
 }
 
 model Chat {
-  id        String   @id @default(cuid())
-  orderId   String   @unique
+  id        String    @id @default(cuid())
+  orderId   String
+  withRole  String // "OWNER" or "RIDER"
   messages  Message[]
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+
+  @@unique([orderId, withRole]) // Ensures unique chat per role per order
 }
 
 model Message {
-  id        String   @id @default(cuid())
-  chatId    String
-  chat      Chat     @relation(fields: [chatId], references: [id])
-  content   String
-  senderId  String
-  senderRole String  // "CUSTOMER" | "OWNER" | "RIDER"
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  chatId     String
+  chat       Chat     @relation(fields: [chatId], references: [id])
+  content    String
+  senderId   String
+  senderRole String // "CUSTOMER" | "OWNER" | "RIDER"
+  createdAt  DateTime @default(now())
 }
 
 enum OrderStatus {

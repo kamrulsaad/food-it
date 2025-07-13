@@ -4,11 +4,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import dynamic from "next/dynamic";
-
-const ChatBox = dynamic(() => import("@/components/chat/chatBox"), {
-  ssr: false,
-});
+import ChatWithOwner from "@/components/chat/ChatWithOwner";
 
 type Order = {
   id: string;
@@ -67,7 +63,7 @@ export default function OwnerOrderDetail() {
       </Card>
 
       {/* ChatBox */}
-      <ChatBox orderId={order.id} role="OWNER" />
+      <ChatWithOwner orderId={order.id} role="OWNER" />
     </div>
   );
 }

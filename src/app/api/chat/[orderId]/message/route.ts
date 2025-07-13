@@ -13,22 +13,31 @@ export async function POST(
   { params }: { params: MessageParams["params"] }
 ) {
   const { orderId } = await params;
+  const { searchParams } = new URL(req.url);
+  const withRole = searchParams.get("withRole");
+
   const { userId } = await auth();
-
-  console.log("Dak dilam: ", orderId);
-
   if (!userId)
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
   const { content, role } = body;
 
+  if (!withRole || !["OWNER", "RIDER"].includes(withRole)) {
+    return NextResponse.json({ error: "Invalid withRole" }, { status: 400 });
+  }
+
   try {
     const chat = await prisma.chat.findUnique({
-      where: { orderId },
+      where: {
+        orderId_withRole: {
+          orderId,
+          withRole,
+        },
+      },
     });
 
-    if (!chat) {    
+    if (!chat) {
       return NextResponse.json({ error: "Chat not found" }, { status: 404 });
     }
 
@@ -43,10 +52,7 @@ export async function POST(
 
     return NextResponse.json(message);
   } catch (err) {
-    console.error("POST /api/chat/[orderId]/message ERROR:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    console.error("POST /api/chat/[orderId]/message error:", err);
+    return NextResponse.json({ error: "Internal error" }, { status: 500 });
   }
 }

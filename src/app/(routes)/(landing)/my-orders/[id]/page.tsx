@@ -6,10 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Order } from "../../../../../../prisma/generated/prisma";
 import { motion } from "framer-motion";
 import { CheckCircle, Circle, Clock } from "lucide-react";
-import dynamic from "next/dynamic";
-const ChatBox = dynamic(() => import("@/components/chat/chatBox"), {
-  ssr: false,
-});
+import CustomerChatController from "@/components/chat/CustomerChatController";
 
 const statusSteps = [
   { status: "PLACED", timeKey: "placedAt" },
@@ -218,7 +215,7 @@ export default function OrderTrackingPage() {
         </Card>
       )}
       {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
-        <>{order.riderId && <ChatBox orderId={order.id} role="CUSTOMER" />}</>
+        <>{order.riderId && <CustomerChatController orderId={order.id} />}</>
       )}
     </div>
   );

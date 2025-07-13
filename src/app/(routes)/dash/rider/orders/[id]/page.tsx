@@ -3,8 +3,8 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import ChatBox from "@/components/chat/chatBox";
 import { Order } from "../../../../../../../prisma/generated/prisma";
+import ChatWithRider from "@/components/chat/ChatWithRider";
 
 type ExtendedOrder = Order & {
   OrderItem: {
@@ -101,7 +101,7 @@ export default function RiderOrderDetailPage() {
       )}
 
       {/* Chat Box */}
-      <ChatBox orderId={order.id} role="RIDER" />
+      <ChatWithRider orderId={order.id} role="RIDER" />
     </div>
   );
 }
