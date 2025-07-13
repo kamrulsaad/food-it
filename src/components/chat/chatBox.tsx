@@ -75,7 +75,7 @@ export default function ChatBox({ orderId, role, withRole, onClose }: ChatBoxPro
           <div
             key={msg.id}
             className={cn(
-              "max-w-[80%] text-sm p-2 rounded-md",
+              "max-w-[80%] mt-2 text-sm p-2 rounded-md",
               msg.senderRole === role
                 ? "bg-blue-100 self-end ml-auto text-right"
                 : "bg-white text-black self-start"

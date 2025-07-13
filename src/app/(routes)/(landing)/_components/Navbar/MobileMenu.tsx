@@ -7,6 +7,7 @@ import {
 import { Menu } from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import NavAuth from "./NavAuth";
 
 type Props = {
   navItems: {
@@ -19,7 +20,7 @@ const MobileMenu = ({ navItems }: Props) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Menu className="md:hidden font-bold" />
+        <Menu className="xl:hidden font-bold ml-auto" />
       </SheetTrigger>
 
       <SheetContent side="right" className="pl-1">
@@ -34,6 +35,7 @@ const MobileMenu = ({ navItems }: Props) => {
               {item.label}
             </Link>
           ))}
+          <NavAuth />
         </div>
       </SheetContent>
     </Sheet>

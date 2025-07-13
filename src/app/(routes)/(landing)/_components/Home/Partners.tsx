@@ -15,7 +15,7 @@ export default function PartnerCTA() {
       {/* Overlay content */}
       <div className="max-w-xl bg-white/90 backdrop-blur-md rounded-xl shadow-xl p-6 md:p-8 mt-20 ">
         <h2 className="text-xl sm:text-2xl font-semibold mb-4">
-          List your restaurant or shop on Food IT
+          List your Restaurant or Homemade Shop 
         </h2>
         <p className="text-sm text-gray-700 mb-2">
           Would you like millions of new customers to enjoy your amazing food

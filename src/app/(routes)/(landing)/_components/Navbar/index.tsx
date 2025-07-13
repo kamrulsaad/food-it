@@ -1,26 +1,22 @@
 import Image from "next/image";
 import Link from "next/link";
 import MobileMenu from "./MobileMenu";
-import {
-  SignInButton,
-  SignOutButton,
-  SignUpButton,
-  UserButton,
-} from "@clerk/nextjs";
-import { auth } from "@clerk/nextjs/server";
+
 import CartDrawer from "@/components/global/cart-drawer";
+import NavAuth from "./NavAuth";
 
 const navItems = [
   { href: "/", label: "Home" },
+  { href: "/r", label: "Restaurants" },
+  { href: "/r?homemade=1", label: "Homemade" },
   { href: "/my-orders", label: "My Orders" },
-  { href: '/preorder', label: "Pre-Order" },
+  { href: "/preorder", label: "Pre-Order" },
 ];
 
 export default async function MobileNavbar() {
-  const { userId } = await auth();
   return (
     <nav className="w-full px-4 sm:px-10 md:px-20 xl:px-40 py-3 border-b shadow-sm sticky top-0 z-50 bg-white">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between w-full">
         {/* Logo */}
         <Link className="flex items-center" href="/">
           <Image
@@ -43,7 +39,7 @@ export default async function MobileNavbar() {
         </div>
 
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-4 text-xl font-semibold">
+        <div className="hidden xl:flex items-center gap-4 text-xl font-semibold">
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -53,29 +49,7 @@ export default async function MobileNavbar() {
               {item.label}
             </Link>
           ))}
-          {!userId ? (
-            <>
-              <SignInButton mode="modal">
-                <button className="text-primary py-2 rounded-md hover:text-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
-                  Sign In
-                </button>
-              </SignInButton>
-              <SignUpButton mode="modal">
-                <button className="bg-primary text-white px-4 py-2 rounded-md hover:bg-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </>
-          ) : (
-            <>
-              <SignOutButton>
-                <button className="py-2 rounded-md hover:text-orange-600 transition duration-300 ease-in-out hover:cursor-pointer">
-                  Sign Out
-                </button>
-              </SignOutButton>
-              <UserButton />
-            </>
-          )}
+          <NavAuth />
         </div>
       </div>
     </nav>

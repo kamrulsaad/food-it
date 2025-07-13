@@ -67,7 +67,6 @@ export default function PreOrderPage() {
                 <th className="border px-4 py-2">Scheduled Date</th>
                 <th className="border px-4 py-2">Meal Slot</th>
                 <th className="border px-4 py-2">Items</th>
-                <th className="border px-4 py-2">Delivery Address</th>
                 <th className="border px-4 py-2">Customer Email</th>
                 <th className="border px-4 py-2 text-center">Action</th>
               </tr>
@@ -89,16 +88,14 @@ export default function PreOrderPage() {
                       ))}
                     </ul>
                   </td>
-                  <td className="border px-4 py-2">
-                    {s.user?.address || "N/A"}
-                  </td>
                   <td className="border px-4 py-2">{s.user?.email || "N/A"}</td>
                   <td className="border px-4 py-2 text-center">
                     <Button
                       onClick={() => markPrepared(s.id)}
                       disabled={
                         loadingId === s.id ||
-                        s.scheduledFor > new Date().toISOString()
+                        new Date(s.scheduledFor).setHours(0, 0, 0, 0) >
+                          new Date().setHours(0, 0, 0, 0)
                       }
                       className="cursor-pointer"
                     >
