@@ -1,12 +1,13 @@
-// app/r/components/RestaurantGrid.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import RestaurantCard from "./RestaurantCard";
 import { RestaurantPreview } from "@/lib/types";
 import RestaurantLoading from "./RestaurantLoading";
 
 export default function RestaurantGrid() {
+  const searchParams = useSearchParams();
   const [restaurants, setRestaurants] = useState<RestaurantPreview[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -14,9 +15,9 @@ export default function RestaurantGrid() {
     const fetchRestaurants = async () => {
       try {
         const url = new URL("/api/restaurant", window.location.origin);
-        const params = new URLSearchParams(window.location.search);
-        url.search = params.toString();
+        url.search = searchParams.toString(); // ← this reflects current filters
 
+        setLoading(true);
         const res = await fetch(url.toString());
         const data: RestaurantPreview[] = await res.json();
         setRestaurants(data);
@@ -28,7 +29,7 @@ export default function RestaurantGrid() {
     };
 
     fetchRestaurants();
-  }, []);
+  }, [searchParams]); // ✅ reactive dependency
 
   if (loading) return <RestaurantLoading />;
   if (!restaurants.length)

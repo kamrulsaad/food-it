@@ -15,6 +15,7 @@ export const CreateRestaurantSchema = z.object({
   closingTime: z.string(),
   workingDays: z.array(z.enum(WEEKDAYS)),
   deliveryTime: z.string(),
+  isHomeMade: z.boolean(),
   deliveryFee: z.coerce.number().min(0),
   ownerId: z.string().min(1),
 });

@@ -80,6 +80,7 @@ model Restaurant {
   state        String
   logo         String
   coverPhoto   String
+  isHomeMade   Boolean   @default(false)
   approved     Boolean   @default(false)
   openingTime  String
   closingTime  String

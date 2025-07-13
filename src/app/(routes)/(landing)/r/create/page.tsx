@@ -13,8 +13,8 @@ export default async function RestaurantCreatePage() {
   if (!user || user.role !== "CUSTOMER") return redirect("/");
 
   return (
-    <div className="flex justify-center items-center py-10 px-4 sm:px-10 md:px-20 xl:px-40">
-      <div className="w-full max-w-3xl">
+    <div className="flex justify-center items-center  px-4 sm:px-10 md:px-20 xl:px-40">
+      <div className="w-full">
         <CreateRestaurantForm />
       </div>
     </div>

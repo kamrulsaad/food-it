@@ -33,6 +33,7 @@ export default function SidebarFilters() {
     params.delete("category");
     params.delete("freeDelivery");
     params.delete("openNow");
+    params.delete("homemade"); 
     router.push(`/r?${params.toString()}`);
   };
 
@@ -101,7 +102,19 @@ export default function SidebarFilters() {
       </div>
 
       {/* Checkboxes */}
+
       <div className="space-y-2">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            className="cursor-pointer"
+            id="homemade"
+            checked={searchParams.get("homemade") === "1"}
+            onCheckedChange={(checked) =>
+              updateQuery("homemade", checked ? "1" : null)
+            }
+          />
+          <Label htmlFor="homemade">Homemade</Label>
+        </div>
         <div className="flex items-center space-x-2">
           <Checkbox
             className="cursor-pointer"

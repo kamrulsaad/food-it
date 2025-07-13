@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RestaurantPreview } from "@/lib/types";
 import { Package2Icon } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
 
 export default function RestaurantCard({
   name,
@@ -12,11 +13,19 @@ export default function RestaurantCard({
   deliveryTime,
   deliveryFee,
   minPrice,
+  isHomeMade,
 }: RestaurantPreview) {
   return (
     <Link href={"/r/" + id}>
       <Card className="cursor-pointer pb-2 pt-0 hover:shadow-md transition-all duration-200 rounded-xl overflow-hidden">
         <div className="relative w-full h-28 sm:h-32 md:h-36">
+          {isHomeMade && (
+            <Badge
+              className="absolute top-2 left-2 z-10 px-2 py-1"
+            >
+              Homemade
+            </Badge>
+          )}
           <Image
             src={coverPhoto}
             alt={`${name} cover`}

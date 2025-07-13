@@ -9,6 +9,7 @@ const querySchema = z.object({
   city: z.string().min(1),
   category: z.string().optional(),
   sort: z.enum(["deliveryTime", "price"]).optional(),
+  homemade: z.enum(["0", "1"]).optional(),
 });
 
 export async function GET(req: NextRequest) {
@@ -21,12 +22,13 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Invalid query" }, { status: 400 });
     }
 
-    const { city, category, sort } = parsed.data;
+    const { city, category, sort, homemade } = parsed.data;
 
     const restaurants = await prisma.restaurant.findMany({
       where: {
         approved: true,
         cityRef: { name: city },
+        isHomeMade: homemade === "1" ? true : undefined,
         ...(category
           ? {
               menuItems: {
@@ -55,6 +57,7 @@ export async function GET(req: NextRequest) {
       coverPhoto: r.coverPhoto,
       deliveryTime: r.deliveryTime,
       deliveryFee: r.deliveryFee,
+      isHomeMade: r.isHomeMade,
       categories: Array.from(
         new Set(
           r.menuItems

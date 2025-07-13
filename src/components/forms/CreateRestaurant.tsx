@@ -23,7 +23,6 @@ import {
   CardDescription,
 } from "../ui/card";
 import { Loader2 } from "lucide-react";
-
 import CreateRestaurantSchema, {
   CreateRestaurantType,
 } from "@/validations/restaurant";
@@ -31,6 +30,14 @@ import { useEffect, useState } from "react";
 import FileUpload from "../global/file-upload";
 import { WEEKDAYS } from "@/constants/weekdays";
 import { City } from "../../../prisma/generated/prisma";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
+import { Checkbox } from "../ui/checkbox";
 
 const CreateRestaurantForm = () => {
   const router = useRouter();
@@ -54,26 +61,28 @@ const CreateRestaurantForm = () => {
     resolver: zodResolver(CreateRestaurantSchema),
     defaultValues: {
       name: "",
-      email: user?.primaryEmailAddress?.emailAddress,
+      email: "",
       phone: "",
       address: "",
       cityId: "",
       state: "",
       zipCode: "",
       logo: "",
-      ownerId: userId || "",
+      ownerId: "",
       coverPhoto: "",
       openingTime: "",
       closingTime: "",
       workingDays: [],
       deliveryTime: "",
       deliveryFee: 0,
+      isHomeMade: false,
     },
   });
 
   const isLoading = form.formState.isSubmitting;
 
   const handleSubmit = async (values: CreateRestaurantType) => {
+    console.log("Form Values:", values);
     try {
       const res = await fetch("/api/restaurant", {
         method: "POST",
@@ -93,6 +102,8 @@ const CreateRestaurantForm = () => {
     }
   };
 
+  console.log(form.formState.errors);
+
   useEffect(() => {
     if (!isSignedIn) {
       toast.error("You must be logged in to create a restaurant.", {
@@ -104,6 +115,16 @@ const CreateRestaurantForm = () => {
       });
     }
   }, [router, isSignedIn]);
+
+  useEffect(() => {
+    if (user?.primaryEmailAddress?.emailAddress) {
+      form.setValue("email", user.primaryEmailAddress.emailAddress);
+    }
+
+    if (userId) {
+      form.setValue("ownerId", userId);
+    }
+  }, [user?.primaryEmailAddress?.emailAddress, userId, form]);
 
   if (!isSignedIn) {
     return null;
@@ -150,7 +171,8 @@ const CreateRestaurantForm = () => {
                       <Input
                         placeholder={user?.primaryEmailAddress?.emailAddress}
                         {...field}
-                        disabled
+                        readOnly
+                        className="bg-gray-100 cursor-not-allowed"
                       />
                     </FormControl>
                     <FormMessage />
@@ -158,78 +180,104 @@ const CreateRestaurantForm = () => {
                 )}
               />
             </div>
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Phone Number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="cityId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <select
-                      {...field}
-                      className="w-full border rounded px-3 py-2"
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="phone"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>Phone</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Phone Number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="cityId"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>City</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
                     >
-                      <option value="">Select a city</option>
-                      {cities.map((city) => (
-                        <option key={city.id} value={city.id}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                      <FormControl>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a city" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {cities.map((city) => (
+                          <SelectItem key={city.id} value={city.id}>
+                            {city.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-4">
+              <FormField
+                control={form.control}
+                name="logo"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>
+                      Restaurant Logo (Recommended Dimension: 400*400)
+                    </FormLabel>
+                    <FormControl>
+                      <FileUpload
+                        endpoint="restaurantLogo"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="coverPhoto"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <FormLabel>
+                      Cover Photo (Recommended Dimension: 1920*1080)
+                    </FormLabel>
+                    <FormControl>
+                      <FileUpload
+                        endpoint="restaurantLogo"
+                        value={field.value}
+                        onChange={field.onChange}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}
-              name="logo"
+              name="isHomeMade"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Restaurant Logo (Recommended Dimension: 400*400)
-                  </FormLabel>
+                <FormItem className="flex items-center space-x-3">
                   <FormControl>
-                    <FileUpload
-                      endpoint="restaurantLogo"
-                      value={field.value}
-                      onChange={field.onChange}
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="coverPhoto"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Cover Photo (Recommended Dimension: 1920*1080)
-                  </FormLabel>
-                  <FormControl>
-                    <FileUpload
-                      endpoint="restaurantLogo"
-                      value={field.value}
-                      onChange={field.onChange}
-                    />
-                  </FormControl>
+                  <FormLabel>Is Homemade?</FormLabel>
                   <FormMessage />
                 </FormItem>
               )}

@@ -2,6 +2,7 @@
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -34,6 +35,7 @@ export default function ExplorePage() {
           </SheetTrigger>
           <SheetContent side="right" className="p-6">
             <SheetTitle className="text-lg font-semibold">Filters</SheetTitle>
+            <SheetDescription></SheetDescription>
             <SidebarFilters />
           </SheetContent>
         </Sheet>

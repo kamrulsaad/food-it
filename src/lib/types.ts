@@ -7,6 +7,7 @@ export type RestaurantPreview = {
   deliveryFee: number;
   categories: string[];
   minPrice: number;
+  isHomeMade: boolean;
 };
 
 export type CartItem = {
