@@ -36,9 +36,11 @@ export default function PreOrderCard({
     <div className="border rounded-md shadow-sm p-4 bg-white">
       <div className="flex justify-between text-sm text-gray-600 mb-2">
         <span>Created: {format(new Date(preOrder.createdAt), "PPP")}</span>
-        <span>
-          Status: <strong className="text-black">{preOrder.status}</strong>
-        </span>
+        {preOrder.status !== "CANCELLED_BY_RESTAURANT" && (
+          <span>
+            Status: <strong className="text-black">{preOrder.status}</strong>
+          </span>
+        )}
       </div>
       <div className="text-sm mb-1">
         <strong>Scheduled:</strong>{" "}
@@ -61,6 +63,12 @@ export default function PreOrderCard({
           currentDateTime={new Date(preOrder.scheduledDate)}
           onSuccess={onSuccess} // this will be passed from parent
         />
+      )}
+      {preOrder.status === "CANCELLED_BY_RESTAURANT" && (
+        <div className="text-red-600 mb-2">
+          This pre-order has been cancelled by the restaurant. You will get
+          confirmation on your refund via Email.
+        </div>
       )}
       {showCancel || showDelete ? (
         <Button
