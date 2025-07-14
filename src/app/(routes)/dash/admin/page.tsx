@@ -20,7 +20,7 @@ interface DashboardData {
   stats: {
     totalRevenue: number;
     totalOrders: number;
-    avgOrderValue: number;
+    platformIncome: number;
     largestOrder: {
       id: string;
       amount: number;
@@ -28,7 +28,7 @@ interface DashboardData {
     } | null;
   };
   topRestaurantShares: { name: string; value: number }[];
-  monthlyRevenue: { month: string; total: number }[];
+  dailyRevenue: { month: string; total: number }[];
 }
 
 const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042", "#a4de6c"];
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
       </div>
     );
 
-  const { stats, topRestaurantShares, monthlyRevenue } = data;
+  const { stats, topRestaurantShares, dailyRevenue } = data;
 
   return (
     <div className="space-y-6">
@@ -76,10 +76,10 @@ export default function AdminDashboard() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Avg Order Value</CardTitle>
+            <CardTitle>Platform Income</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-semibold">
-            ৳{stats.avgOrderValue.toFixed(2)}
+            ৳{stats.platformIncome?.toFixed(2)}
           </CardContent>
         </Card>
       </div>
@@ -117,13 +117,13 @@ export default function AdminDashboard() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Monthly Platform Revenue</CardTitle>
+            <CardTitle>Daily Platform Revenue</CardTitle>
           </CardHeader>
           <CardContent className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyRevenue}>
+              <BarChart data={dailyRevenue}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
+                <XAxis dataKey="day" />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="total" fill="#8884d8" radius={[6, 6, 0, 0]} />

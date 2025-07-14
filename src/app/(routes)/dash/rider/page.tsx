@@ -30,7 +30,7 @@ type RiderDashboardData = {
   };
   orders: Order[];
   totalIncome: number;
-  monthlyData: { month: string; income: number }[];
+  dailyData: { date: string; income: number }[];
 };
 
 export default function RiderDashboard() {
@@ -58,7 +58,7 @@ export default function RiderDashboard() {
     );
   }
 
-  const { rider, orders, totalIncome, monthlyData } = data;
+  const { rider, orders, totalIncome, dailyData } = data;
 
   return (
     <div className="mx-auto space-y-6">
@@ -95,18 +95,16 @@ export default function RiderDashboard() {
       {/* Monthly Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">
-            Monthly Income (Last 6 Months)
-          </CardTitle>
+          <CardTitle className="text-lg">Daily Income (Last 30 Days)</CardTitle>
         </CardHeader>
         <CardContent className="h-72">
-          {monthlyData.length === 0 ? (
+          {dailyData?.length === 0 ? (
             <p className="text-sm text-muted-foreground">No data available.</p>
           ) : (
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData}>
+              <BarChart data={data?.dailyData}>
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
+                <XAxis dataKey="date" />
                 <YAxis />
                 <Tooltip />
                 <Bar dataKey="income" fill="#22c55e" radius={[4, 4, 0, 0]} />

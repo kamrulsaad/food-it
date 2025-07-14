@@ -2,11 +2,12 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { subMonths, startOfMonth } from "date-fns";
+import { subDays, startOfDay } from "date-fns";
 
 export async function GET() {
   const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId)
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const orders = await prisma.order.findMany({
     where: { status: "DELIVERED" },
@@ -17,10 +18,16 @@ export async function GET() {
 
   const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
   const totalOrders = orders.length;
-  const avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
+  const platformIncome = orders.reduce(
+    (sum, o) => sum + (o.totalAmount - o.deliveryFee) * 0.1,
+    0
+  );
 
   // Top 5 restaurants by revenue
-  const revenueByRestaurant = new Map<string, { name: string; revenue: number }>();
+  const revenueByRestaurant = new Map<
+    string,
+    { name: string; revenue: number }
+  >();
 
   for (const order of orders) {
     const r = order.restaurant;
@@ -42,29 +49,42 @@ export async function GET() {
     value: parseFloat(((r.revenue / totalTopRevenue) * 100).toFixed(2)),
   }));
 
-  // Monthly platform revenue
-  const monthlyRevenue = Array.from({ length: 6 }).map((_, i) => {
-    const date = subMonths(startOfMonth(new Date()), i);
-    const label = date.toLocaleString("default", { month: "short", year: "2-digit" });
+  // Last 14 days daily revenue
+  const dailyRevenue = Array.from({ length: 14 })
+    .map((_, i) => {
+      const date = startOfDay(subDays(new Date(), i));
 
-    const monthTotal = orders
-      .filter((o) => {
-        const d = new Date(o.createdAt);
-        return d.getMonth() === date.getMonth() && d.getFullYear() === date.getFullYear();
-      })
-      .reduce((sum, o) => sum + o.totalAmount, 0);
+      const label = date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+      }); // e.g., "15 Jul"
 
-    return { month: label, total: monthTotal };
-  }).reverse();
+      const dayTotal = orders
+        .filter((o) => {
+          const d = new Date(o.createdAt);
+          return (
+            d.getDate() === date.getDate() &&
+            d.getMonth() === date.getMonth() &&
+            d.getFullYear() === date.getFullYear()
+          );
+        })
+        .reduce((sum, o) => sum + o.totalAmount, 0);
+
+      return { day: label, total: dayTotal };
+    })
+    .reverse(); // So the latest day is last
 
   // Extra insights
-  const largestOrder = orders.reduce((max, o) => (o.totalAmount > max.totalAmount ? o : max), orders[0] || null);
+  const largestOrder = orders.reduce(
+    (max, o) => (o.totalAmount > max.totalAmount ? o : max),
+    orders[0] || null
+  );
 
   return NextResponse.json({
     stats: {
       totalRevenue,
       totalOrders,
-      avgOrderValue,
+      platformIncome,
       largestOrder: {
         id: largestOrder?.id,
         amount: largestOrder?.totalAmount,
@@ -72,6 +92,6 @@ export async function GET() {
       },
     },
     topRestaurantShares,
-    monthlyRevenue,
+    dailyRevenue,
   });
 }

@@ -1,8 +1,8 @@
 // /app/api/rider/profile/route.ts
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
-import { startOfMonth, subMonths } from "date-fns";
 import prisma from "@/lib/prisma";
+import { subDays, startOfDay } from "date-fns";
 
 export async function GET() {
   const { userId } = await auth();
@@ -29,24 +29,28 @@ export async function GET() {
     0
   );
 
-  // Generate monthly income data (last 6 months)
-  const monthlyData = Array.from({ length: 6 })
+  // ...
+
+  // Generate daily income data (last 30 days)
+  const today = startOfDay(new Date());
+  const dailyData = Array.from({ length: 30 })
     .map((_, i) => {
-      const date = subMonths(startOfMonth(new Date()), i);
-      const label = date.toLocaleString("default", {
+      const date = subDays(today, i);
+      const label = date.toLocaleDateString("en-GB", {
+        day: "2-digit",
         month: "short",
-        year: "2-digit",
       });
 
-      const monthTotal = rider.Order.filter((o) => {
+      const dayTotal = rider.Order.filter((o) => {
         const createdAt = new Date(o.createdAt);
         return (
+          createdAt.getDate() === date.getDate() &&
           createdAt.getMonth() === date.getMonth() &&
           createdAt.getFullYear() === date.getFullYear()
         );
       }).reduce((sum, o) => sum + o.deliveryFee, 0);
 
-      return { month: label, income: monthTotal };
+      return { date: label, income: dayTotal };
     })
     .reverse();
 
@@ -60,6 +64,6 @@ export async function GET() {
     },
     orders: rider.Order,
     totalIncome,
-    monthlyData,
+    dailyData,
   });
 }
