@@ -7,10 +7,9 @@ import NavAuth from "./NavAuth";
 
 const navItems = [
   { href: "/", label: "Home" },
-  { href: "/r", label: "Restaurants" },
-  { href: "/r?homemade=1", label: "Homemade" },
   { href: "/my-orders", label: "My Orders" },
   { href: "/preorder", label: "Pre-Order" },
+  { href: "/r?homemade=1", label: "Homemade" },
 ];
 
 export default async function MobileNavbar() {
