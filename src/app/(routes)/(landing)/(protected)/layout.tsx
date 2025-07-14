@@ -18,14 +18,12 @@ const ProtectedLayout = ({ children }: Props) => {
   useEffect(() => {
     if (isLoaded) {
       if (!user) {
-        // Store the intended route
         localStorage.setItem("redirectAfterLogin", pathname);
         setShowLoginPrompt(true);
       }
     }
   }, [isLoaded, user, pathname]);
 
-  // After login, Clerk will redirect you back to the app. Use a middleware or a listener to redirect to saved path.
   useEffect(() => {
     if (user && typeof window !== "undefined") {
       const redirectTo = localStorage.getItem("redirectAfterLogin");
@@ -36,7 +34,10 @@ const ProtectedLayout = ({ children }: Props) => {
     }
   }, [user, router, pathname]);
 
-  if (!isLoaded) return null;
+  if (!isLoaded)
+    return (
+      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center"></div>
+    );
 
   if (showLoginPrompt) {
     return (
