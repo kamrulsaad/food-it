@@ -8,7 +8,7 @@ export async function sendPreOrderReminderEmail(
   time: string
 ) {
   const res = await resend.emails.send({
-    from: "noreply@foodit-app.vercel.app",
+    from: "noreply@food-it.xyz",
     to,
     subject: "Your Pre-order is scheduled soon!",
     html: `
@@ -21,6 +21,6 @@ export async function sendPreOrderReminderEmail(
       <p>Thanks for ordering with us!</p>
     `,
   });
-  
+
   console.log("Email sent:", res);
 }

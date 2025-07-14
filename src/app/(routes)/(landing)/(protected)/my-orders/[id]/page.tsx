@@ -67,7 +67,7 @@ export default function OrderTrackingPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl font-semibold">
-            Order Tracking – #{order.id.slice(0, 6)}
+            Order Tracking – #{order.id?.slice(0, 6)}
           </CardTitle>
         </CardHeader>
         <CardContent className="relative">

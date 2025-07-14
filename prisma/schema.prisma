@@ -263,11 +263,12 @@ enum MealSlot {
 }
 
 enum PreOrderStatus {
-  PENDING       // customer submitted
-  RECEIVED      // restaurant acknowledged
-  CONFIRMED     // restaurant confirmed
-  CONVERTED     // turned into order
-  CANCELLED     // cancelled by customer before confirmation
+  PENDING // customer submitted
+  RECEIVED // restaurant acknowledged
+  CONFIRMED // restaurant confirmed
+  CONVERTED // turned into order
+  CANCELLED // cancelled by customer before confirmation
+  CANCELLED_BY_RESTAURANT // restaurant cancelled 
 }
 
 enum OrderStatus {

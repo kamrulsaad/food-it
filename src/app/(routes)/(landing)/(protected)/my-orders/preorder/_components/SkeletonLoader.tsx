@@ -4,8 +4,8 @@ import { Skeleton } from "@/components/global/skeleton";
 
 export default function SkeletonLoader() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {Array.from({ length: 4 }).map((_, i) => (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
           className="space-y-3 p-4 border rounded shadow-sm bg-white"
