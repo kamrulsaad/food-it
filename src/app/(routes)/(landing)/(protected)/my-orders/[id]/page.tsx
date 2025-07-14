@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Order } from "../../../../../../prisma/generated/prisma";
+import { Order } from "../../../../../../../prisma/generated/prisma";
 import { motion } from "framer-motion";
 import { CheckCircle, Circle, Clock } from "lucide-react";
 import CustomerChatController from "@/components/chat/CustomerChatController";
@@ -88,20 +88,20 @@ export default function OrderTrackingPage() {
               const dotColor = isCompleted
                 ? "text-green-600"
                 : isActive
-                ? "text-yellow-500 animate-pulse"
-                : "text-gray-400";
+                  ? "text-yellow-500 animate-pulse"
+                  : "text-gray-400";
 
               const labelColor = isCompleted
                 ? "text-green-800 font-medium"
                 : isActive
-                ? "text-yellow-700 font-semibold"
-                : "text-gray-400";
+                  ? "text-yellow-700 font-semibold"
+                  : "text-gray-400";
 
               const Icon = isCompleted
                 ? CheckCircle
                 : isActive
-                ? Clock
-                : Circle;
+                  ? Clock
+                  : Circle;
 
               return (
                 <motion.li
