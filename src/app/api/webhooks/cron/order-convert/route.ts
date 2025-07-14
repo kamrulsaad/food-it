@@ -9,7 +9,6 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const token = url.searchParams.get("key");
 
-  // Optional: Secure the endpoint with a secret token
   if (!CRON_SECRET || token !== CRON_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -19,16 +18,37 @@ export async function GET(req: Request) {
   const preOrders = await prisma.preOrder.findMany({
     where: {
       scheduledDate: { lte: now },
-      status: "PENDING",
+      status: "CONFIRMED",
     },
     include: {
+      restaurant: {
+        select: {
+          id: true,
+          deliveryFee: true,
+        },
+      },
       PreOrderItem: {
         include: {
-          menuItem: true, // Needed to calculate totalAmount
+          menuItem: true,
         },
       },
     },
   });
+
+  const notConfirmedPreOrders = await prisma.preOrder.findMany({
+    where: {
+      scheduledDate: { lte: now },
+      status: "PENDING",
+    },
+  });
+
+  // Update pending pre-orders to Cancelled by restaurant
+  if (notConfirmedPreOrders.length > 0) {
+    await prisma.preOrder.updateMany({
+      where: { id: { in: notConfirmedPreOrders.map((po) => po.id) } },
+      data: { status: "CANCELLED_BY_RESTAURANT" },
+    });
+  }
 
   if (!preOrders.length) {
     return NextResponse.json({ message: "No pre-orders to convert." });
@@ -37,21 +57,23 @@ export async function GET(req: Request) {
   const results = [];
 
   for (const preorder of preOrders) {
-    // Calculate total amount based on menu item price * quantity
-    const totalAmount = preorder.PreOrderItem.reduce((sum, item) => {
+    const totalItemCost = preorder.PreOrderItem.reduce((sum, item) => {
       return sum + item.quantity * item.menuItem.price;
     }, 0);
+
+    const deliveryFee = preorder.restaurant.deliveryFee || 0;
+    const totalAmount = totalItemCost + deliveryFee;
 
     const order = await prisma.order.create({
       data: {
         userId: preorder.userId,
-        restaurantId: preorder.restaurantId,
-        address: preorder.address || "", // fallback if null
+        restaurantId: preorder.restaurant.id,
+        address: preorder.address || "",
         status: "PLACED",
         isScheduled: true,
         scheduledAt: preorder.scheduledDate,
         totalAmount,
-        deliveryFee: 0, // Adjust if needed
+        deliveryFee,
         OrderItem: {
           create: preorder.PreOrderItem.map((item) => ({
             menuItemId: item.menuItemId,
@@ -64,7 +86,7 @@ export async function GET(req: Request) {
     await prisma.preOrder.update({
       where: { id: preorder.id },
       data: {
-        status: "CONFIRMED",
+        status: "CONVERTED",
       },
     });
 
