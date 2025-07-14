@@ -21,9 +21,9 @@ type DashboardData = {
   stats: {
     totalEarnings: number;
     orderCount: number;
-    avgOrderValue: number;
+    todayIncome: number; // updated
   };
-  monthlyEarnings: { month: string; total: number }[];
+  dailyEarnings: { date: string; total: number }[]; // updated
   topItems: { name: string; quantity: number }[];
   recentOrders: {
     id: string;
@@ -62,7 +62,7 @@ export default function OwnerDashboardPage() {
     );
   }
 
-  const { restaurant, stats, monthlyEarnings, topItems, recentOrders } = data;
+  const { restaurant, stats, dailyEarnings, topItems, recentOrders } = data;
 
   return (
     <div className="mx-auto space-y-6">
@@ -94,24 +94,24 @@ export default function OwnerDashboardPage() {
         </Card>
         <Card>
           <CardHeader>
-            <CardTitle>Avg. Order Value</CardTitle>
+            <CardTitle>Today&apos;s Earnings</CardTitle>
           </CardHeader>
           <CardContent className="text-2xl font-bold text-orange-600">
-            ৳{stats.avgOrderValue.toFixed(2)}
+            ৳{stats.todayIncome.toFixed(2)}
           </CardContent>
         </Card>
       </div>
 
-      {/* Monthly Earnings Chart */}
+      {/* Daily Earnings Chart */}
       <Card>
         <CardHeader>
-          <CardTitle>Monthly Revenue (Last 6 Months)</CardTitle>
+          <CardTitle>Daily Revenue (Past 7 Days)</CardTitle>
         </CardHeader>
         <CardContent className="h-72">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={monthlyEarnings}>
+            <BarChart data={dailyEarnings}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
+              <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
               <Bar dataKey="total" fill="#10b981" radius={[4, 4, 0, 0]} />

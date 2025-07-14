@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import prisma from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { subMonths, startOfMonth } from "date-fns";
+import { subDays, isSameDay, format, isToday } from "date-fns";
 
 export async function GET() {
   const { userId } = await auth();
@@ -30,31 +30,30 @@ export async function GET() {
   }
 
   const orders = restaurant.Order;
-  const totalEarnings = orders.reduce((sum, o) => sum + o.totalAmount, 0);
-  const avgOrderValue = orders.length > 0 ? totalEarnings / orders.length : 0;
 
-  // Monthly earnings (last 6 months)
-  const monthlyEarnings = Array.from({ length: 6 })
-    .map((_, i) => {
-      const date = subMonths(startOfMonth(new Date()), i);
-      const label = date.toLocaleString("default", {
-        month: "short",
-        year: "2-digit",
-      });
+  const calcRestaurantIncome = (order: (typeof orders)[number]) => {
+    return (order.totalAmount - order.deliveryFee) * 0.9;
+  };
 
-      const monthlyTotal = orders
-        .filter((o) => {
-          const d = new Date(o.createdAt);
-          return (
-            d.getMonth() === date.getMonth() &&
-            d.getFullYear() === date.getFullYear()
-          );
-        })
-        .reduce((sum, o) => sum + o.totalAmount, 0);
+  const totalEarnings = orders.reduce(
+    (sum, o) => sum + calcRestaurantIncome(o),
+    0
+  );
 
-      return { month: label, total: monthlyTotal };
-    })
-    .reverse();
+  const todayIncome = orders
+    .filter((o) => isToday(new Date(o.createdAt)))
+    .reduce((sum, o) => sum + calcRestaurantIncome(o), 0);
+
+  const dailyEarnings = Array.from({ length: 7 }).map((_, i) => {
+    const day = subDays(new Date(), 6 - i);
+    const label = format(day, "MMM d");
+
+    const total = orders
+      .filter((o) => isSameDay(new Date(o.createdAt), day))
+      .reduce((sum, o) => sum + calcRestaurantIncome(o), 0);
+
+    return { date: label, total };
+  });
 
   // Top 5 selling items
   const itemMap = new Map<string, { name: string; quantity: number }>();
@@ -73,6 +72,19 @@ export async function GET() {
     .sort((a, b) => b.quantity - a.quantity)
     .slice(0, 5);
 
+  // Recent orders
+  const recentOrders = orders
+    .sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    )
+    .slice(0, 5)
+    .map((o) => ({
+      id: o.id,
+      createdAt: o.createdAt,
+      totalAmount: o.totalAmount,
+    }));
+
   return NextResponse.json({
     restaurant: {
       name: restaurant.name,
@@ -81,10 +93,10 @@ export async function GET() {
     stats: {
       totalEarnings,
       orderCount: orders.length,
-      avgOrderValue,
+      todayIncome, // replaces avgOrderValue
     },
-    monthlyEarnings,
+    dailyEarnings,
     topItems,
-    recentOrders: orders.slice(-5).reverse(),
+    recentOrders,
   });
 }
