@@ -40,5 +40,13 @@ export async function GET() {
     })),
   }));
 
-  return NextResponse.json(enriched);
+  return NextResponse.json(
+    enriched.sort((a, b) => {
+      const scheduledDiff =
+        new Date(a.scheduledDate).getTime() -
+        new Date(b.scheduledDate).getTime();
+      if (scheduledDiff !== 0) return scheduledDiff;
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    })
+  );
 }
