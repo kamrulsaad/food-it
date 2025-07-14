@@ -82,7 +82,6 @@ const CreateRestaurantForm = () => {
   const isLoading = form.formState.isSubmitting;
 
   const handleSubmit = async (values: CreateRestaurantType) => {
-    console.log("Form Values:", values);
     try {
       const res = await fetch("/api/restaurant", {
         method: "POST",
@@ -101,8 +100,6 @@ const CreateRestaurantForm = () => {
       toast.error("Something went wrong.");
     }
   };
-
-  console.log(form.formState.errors);
 
   useEffect(() => {
     if (!isSignedIn) {

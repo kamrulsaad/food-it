@@ -4,9 +4,9 @@ import { CreateRestaurantSchema } from "@/validations/restaurant";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
-// Schema validation
+// Schema validation (make city optional)
 const querySchema = z.object({
-  city: z.string().min(1),
+  city: z.string().min(1).optional(),
   category: z.string().optional(),
   sort: z.enum(["deliveryTime", "price"]).optional(),
   homemade: z.enum(["0", "1"]).optional(),
@@ -27,8 +27,8 @@ export async function GET(req: NextRequest) {
     const restaurants = await prisma.restaurant.findMany({
       where: {
         approved: true,
-        cityRef: { name: city },
-        isHomeMade: homemade === "1" ? true : undefined,
+        ...(city ? { cityRef: { name: city } } : {}),
+        ...(homemade === "1" ? { isHomeMade: true } : {}),
         ...(category
           ? {
               menuItems: {
@@ -111,6 +111,7 @@ export async function POST(req: Request) {
         deliveryTime: data.deliveryTime,
         deliveryFee: data.deliveryFee,
         ownerId: data.ownerId,
+        isHomeMade: data.isHomeMade,
       },
     });
 
