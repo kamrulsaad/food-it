@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 export default function CheckoutPage() {
   return (
-    <div className="max-w-2xl mx-auto px-4 sm:px-10 md:px-20 xl:px-40 py-10">
+    <div className="max-w-3xl mx-auto">
       <SignedIn>
         <CheckoutForm />
       </SignedIn>

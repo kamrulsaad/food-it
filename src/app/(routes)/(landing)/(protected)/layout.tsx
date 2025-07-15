@@ -35,9 +35,7 @@ const ProtectedLayout = ({ children }: Props) => {
   }, [user, router, pathname]);
 
   if (!isLoaded)
-    return (
-      <div className="min-h-[calc(100vh-80px)] flex items-center justify-center"></div>
-    );
+    return <div className="flex items-center justify-center"></div>;
 
   if (showLoginPrompt) {
     return (

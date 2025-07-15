@@ -29,9 +29,5 @@ export default async function PreOrderPage() {
     },
   });
 
-  return (
-    <div className="px-4 sm:px-10 md:px-20 xl:px-40 py-10">
-      <PreOrderBuilder availableRestaurants={restaurants} />
-    </div>
-  );
+  return <PreOrderBuilder availableRestaurants={restaurants} />;
 }

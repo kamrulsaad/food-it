@@ -15,7 +15,7 @@ export default async function RiderSignupPage() {
 
   if (!user || DISALLOWED_ROLES.includes(user.role)) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] p-4">
+      <div className="flex flex-col items-center justify-center p-4">
         <h1 className="text-2xl font-bold text-red-500">Access Denied</h1>
         <p>You are not allowed to apply as a rider.</p>
         <Link href="/" className="mt-4">
